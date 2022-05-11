@@ -1,0 +1,21 @@
+{
+  "name": "ms_engage_2022",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "setup": "npm run client-install && npm run server-install",
+    "server-install": "cd server && npm install && cd ..",
+    "client-install": "cd client && npm install && cd ..",
+    "server": "cd server && npm run start && cd ..",
+    "client": "cd client && npm run start && cd ..",
+    "dev": "concurrently -n 'server,client' -c 'red,green'  \"npm run server\" \"npm run client\"",
+    "build": "cd client && npm run build"
+  },
+  "author": "Subasri S",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^7.1.0"
+  }
+}
