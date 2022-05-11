@@ -1,1 +1,1 @@
-console.log("hello from server");
+let u = 1;

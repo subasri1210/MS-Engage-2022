@@ -11,11 +11,18 @@
     "server": "cd server && npm run start && cd ..",
     "client": "cd client && npm run start && cd ..",
     "dev": "concurrently -n 'server,client' -c 'red,green'  \"npm run server\" \"npm run client\"",
-    "build": "cd client && npm run build"
+    "build": "cd client && npm run build",
+    "lint": "eslint ./client ./server",
+    "lint:fix": "eslint --fix ./client ./server",
+    "format": "prettier --write \"**/*.+(js|jsx|css|md)\""
   },
   "author": "Subasri S",
   "license": "ISC",
   "devDependencies": {
-    "concurrently": "^7.1.0"
+    "concurrently": "^7.1.0",
+    "eslint": "^8.15.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "prettier": "^2.6.2"
   }
 }
