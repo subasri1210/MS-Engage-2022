@@ -4,11 +4,25 @@
         "es6": true,
         "node": true
     },
-    "extends": ["plugin:prettier/recommended"],
+    "extends": [
+        "eslint:recommended"
+    ],
     "parserOptions": {
         "ecmaVersion": 2018
     },
     "rules": {
-        "no-console": "error"
+        "indent": [
+            "warn",
+            4,
+            {
+              "SwitchCase": 2
+            }
+        ],
+        "quotes": ["warn", "single"],
+        "semi": ["warn", "always"],
+        "linebreak-style": ["warn", "unix"],
+        "eol-last": ["warn", "unix"],
+        "comma-dangle": ["error", "never"],
+        "import/prefer-default-export": "off"
     }
 }
