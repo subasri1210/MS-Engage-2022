@@ -7,8 +7,8 @@ const cors = require('cors');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 
-
 const rootRouter = require('./routes/root.routes');
+const organisationRouter = require('./routes/organisation.routes');
 
 const app = express();
 const port = 3001;
@@ -55,7 +55,7 @@ app.use(
 );
 
 app.use('/', rootRouter);
-
+app.use('/org', organisationRouter);
 
 app.listen(port, () => {
     console.log(`App running on port ${port}`);

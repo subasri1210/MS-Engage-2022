@@ -28,7 +28,7 @@ var upload = multer({
     limits: { fileSize: MAX_IMAGE_SIZE }
 }).single('image');
 
-const checkAuthMiddleware = async (req, res, next) => {
+const checkAuth = async (req, res, next) => {
     try {
         const token = req.header('Authorization').replace('Bearer ', '');
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -49,5 +49,5 @@ const checkAuthMiddleware = async (req, res, next) => {
 
 module.exports = {
     handleMultiPart: upload,
-    checkAuthMiddleware
+    checkAuth
 };

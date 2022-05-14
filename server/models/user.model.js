@@ -42,7 +42,11 @@ const userSchema = new mongoose.Schema(
         persistedFaceId : {
             type: String,
             trim: true
-        }
+        },
+        organisations: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'organisation'
+        }]
     }
 );
 
