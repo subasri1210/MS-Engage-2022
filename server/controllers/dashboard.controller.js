@@ -66,18 +66,16 @@ const getDashboardData = async (req, res) => {
         let attendanceResponse = '';
 
         //didn't registered intime
-        if (!(attendanceRecorded.intime && attendanceRecorded.outime)){
+        if (!(attendanceRecorded.intime && attendanceRecorded.outime)) {
             attendanceResponse = 'nointime';
-        }
-        else{
+        } else {
             //registered intime but not outtime
-            if(attendanceRecorded.intime && !attendanceRecorded.outime){
+            if (attendanceRecorded.intime && !attendanceRecorded.outime) {
                 attendanceResponse = 'in';
-            }
-            else if(attendanceRecorded.intime && attendanceRecorded.outime){ // registered outtime
+            } else if (attendanceRecorded.intime && attendanceRecorded.outime) {
+                // registered outtime
                 attendanceResponse = 'out';
             }
-
         }
         // handle whether user is marking attendance in proper intime or outime in frontend
         return res.status(200).json({
@@ -88,7 +86,6 @@ const getDashboardData = async (req, res) => {
                 actualOutTime: organisation.outtime
             }
         });
-            
     }
 };
 
@@ -128,7 +125,7 @@ const registerAttendance = async (req, res) => {
     if (!verifyFaceResponse.isIdentical) {
         return res.status(400).json({ error: 'Face not matched' });
     }
-    if(verifyFaceResponse.isIdentical && verifyFaceResponse.confidence < 0.4){
+    if (verifyFaceResponse.isIdentical && verifyFaceResponse.confidence < 0.4) {
         return res.status(400).json({ error: 'Face not matched' });
     }
 
@@ -139,18 +136,16 @@ const registerAttendance = async (req, res) => {
         date: { $gte: startOfDay(new Date()), $lte: endOfDay(new Date()) }
     });
 
-    if(attendance){
-        if(attendance.intime && attendance.outime){
+    if (attendance) {
+        if (attendance.intime && attendance.outime) {
             return res.status(400).json({ error: 'Already marked attendance' });
-        }
-        else if(attendance.intime && !attendance.outime){
+        } else if (attendance.intime && !attendance.outime) {
             attendance.outime = new Date();
             attendance.status = 'out';
             await attendance.save();
             return res.status(200).json({ message: 'Out attendance marked' });
         }
-    }
-    else{
+    } else {
         attendance = new attendanceModel({
             organisation: orgId,
             user: currentUser._id,

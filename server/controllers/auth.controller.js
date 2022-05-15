@@ -64,7 +64,6 @@ const faceLogin = async (req, res) => {
         await user.save();
 
         res.status(200).json({ message: 'Login successful!' });
-        
     } catch (err) {
         console.log(err);
         res.status(400).json({ error: 'Unable to login' });

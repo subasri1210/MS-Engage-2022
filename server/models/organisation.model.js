@@ -11,14 +11,18 @@ const organisationSchema = new mongoose.Schema(
             type: String,
             trim: true
         },
-        admins: [{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'user'
-        }],
-        members: [{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'user'
-        }],
+        admins: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'user'
+            }
+        ],
+        members: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'user'
+            }
+        ],
         inTime: {
             start: {
                 type: Date

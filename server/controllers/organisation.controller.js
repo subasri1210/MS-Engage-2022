@@ -201,7 +201,7 @@ const removeMember = async (req, res) => {
     await user.organisations.pull(orgId);
     await user.save();
 
-    await attendanceModel.deleteMany({user: userId, organisation: orgId});
+    await attendanceModel.deleteMany({ user: userId, organisation: orgId });
     await attendanceModel.save();
 
     return res.status(200).json({

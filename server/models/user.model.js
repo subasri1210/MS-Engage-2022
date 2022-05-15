@@ -3,52 +3,52 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const userSchema = new mongoose.Schema(
-    {
-        email: {
-            type: String,
-            trim: true,
-            required: [true, 'Email is required'],
-            unique: true,
-            lowercase: true
-        },
-        password: {
-            type: String,
-            trim: true,
-            required: [true, 'Password is required']
-        },
-        name: {
-            type: String,
-            trim: true,
-            required: [true, 'Name is required']
-        },
-        tokens: [
-            {
-                token: {
-                    type: String,
-                    required: true
-                }
+const userSchema = new mongoose.Schema({
+    email: {
+        type: String,
+        trim: true,
+        required: [true, 'Email is required'],
+        unique: true,
+        lowercase: true
+    },
+    password: {
+        type: String,
+        trim: true,
+        required: [true, 'Password is required']
+    },
+    name: {
+        type: String,
+        trim: true,
+        required: [true, 'Name is required']
+    },
+    tokens: [
+        {
+            token: {
+                type: String,
+                required: true
             }
-        ],
-        personGroupId : {
-            type: String,
-            trim: true,
-            default: process.env.PERSON_GROUP_ID
-        },
-        personId : {
-            type: String,
-            trim: true
-        },
-        persistedFaceId : {
-            type: String,
-            trim: true
-        },
-        organisations: [{
+        }
+    ],
+    personGroupId: {
+        type: String,
+        trim: true,
+        default: process.env.PERSON_GROUP_ID
+    },
+    personId: {
+        type: String,
+        trim: true
+    },
+    persistedFaceId: {
+        type: String,
+        trim: true
+    },
+    organisations: [
+        {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'organisation'
-        }]
-    }
-);
+        }
+    ]
+});
 
 userSchema.methods.generateAuthToken = async function () {
     const user = this;
