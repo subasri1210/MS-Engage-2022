@@ -154,11 +154,39 @@ const identifyPerson = async (faceId) => {
     return [identifyPersonResponse, error];
 };
 
+const verifyFace = (faceId, personId) => {
+    let verifyFaceResponse = null,
+        error = null;
+    axios({
+        method: 'post',
+        baseURL: `${api_base_url}/face/v1.0/verify`,
+        headers: {
+            'content-type': 'application/json',
+            'Ocp-Apim-Subscription-Key': resourceKey
+        },
+        data: JSON.stringify({
+            faceId: faceId,
+            personId: personId,
+            personGroupId: personGroupId
+        })
+    })
+        .then((response) => {
+            console.log('face verified successfully', response.data);
+            verifyFaceResponse = response.data;
+        })
+        .catch((err) => {
+            console.log(err);
+            error = err;
+        });
+    return [verifyFaceResponse, error];
+};
+
 module.exports = {
     detectFace,
     createPersonGroup,
     createPerson,
     createFace,
     trainPersonGroup,
-    identifyPerson
+    identifyPerson,
+    verifyFace
 };

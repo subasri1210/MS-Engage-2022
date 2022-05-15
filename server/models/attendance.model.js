@@ -10,14 +10,26 @@ const attendanceSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: 'organisation'
         },
-        ins: [{
+        user: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'user'
-        }],
-        outs: [{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'user'
-        }]
+        },
+        intime: {
+            type: Date
+        },
+        outime: {
+            type: Date
+        },
+        status: {
+            type: String,
+            trim: true
+        },
+        workHours: {
+            type: Number
+        }
+    },
+    {
+        timestamps: true
     }
 );
 

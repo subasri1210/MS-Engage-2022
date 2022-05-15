@@ -1,6 +1,25 @@
+const attendanceModel = require('../models/attendance.model');
 const orgModel = require('../models/organisation.model');
 const userModel = require('../models/user.model');
 
+// check if current user is admin or not
+const isAdmin = async (req, res) => {
+    const { orgId } = req.body;
+    const organisation = await orgModel.findById({ orgId });
+    const currentUser = req.user;
+    const isAdmin = organisation.admins.includes(currentUser._id);
+
+    if (isAdmin) {
+        return res.status(200).json({
+            message: 'true'
+        });
+    }
+    return res.status(200).json({
+        message: 'false'
+    });
+};
+
+// create new organisation
 const createOrg = async (req, res) => {
     try {
         const { name, description, inTime, outTime } = req.body;
@@ -30,9 +49,10 @@ const createOrg = async (req, res) => {
     }
 };
 
-const getUserOrgs = async(req,res) => {
+// get all organisations of an user
+const getUserOrgs = async (req, res) => {
     try {
-        const user  = await userModel.findById(req.user._id).populate('organisations');
+        const user = await userModel.findById(req.user._id).populate('organisations');
         const orgs = user.organisations;
 
         return res.status(200).json({
@@ -47,30 +67,8 @@ const getUserOrgs = async(req,res) => {
     }
 };
 
-const getOrgMembers = async (req, res) => {
-    try{
-
-        const org = await orgModel.findById(req.body.orgId).populate('members').populate('admins');
-        const members = org.members;
-        const admins = org.admins;
-
-        return res.status(200).json({
-            message: 'Members and admins fetched successfully',
-            data: {
-                members : members,
-                admins: admins
-            }
-        });
-
-    } catch(err) {
-        console.log(err);
-        return res.status(500).json({
-            message: 'Something went wrong'
-        });
-    }
-};
-
-const addMember = async(req,res) => {
+// add a member to an organisation
+const addMember = async (req, res) => {
     try {
         const { orgId, email } = req.body;
 
@@ -118,11 +116,105 @@ const addMember = async(req,res) => {
     }
 };
 
+// get data of all members of an organisation
+const getAllMembers = async (req, res) => {
+    const { orgId } = req.body;
+    const organisation = await orgModel.findById({ orgId }).populate({
+        path: 'members',
+        select: ['name', 'email']
+    });
+    const currentUser = req.user;
+    const isAdmin = organisation.admins.includes(currentUser._id);
 
+    let user;
+    if (isAdmin) {
+        user = 'admin';
+    } else {
+        user = 'member';
+    }
+
+    const members = organisation.members;
+    const memberData = members.map((data) => {
+        return {
+            currentUser: user,
+            userid: data._id,
+            name: data.name,
+            email: data.email
+        };
+    });
+    return res.status(200).json({
+        message: 'Members fetched successfully',
+        data: memberData
+    });
+};
+
+// make member to admin
+const makeAdmin = async (req, res) => {
+    const { orgId, userId } = req.body;
+    const organisation = await orgModel.findById({ orgId });
+    const currentUser = req.user;
+    const isAdmin = organisation.admins.includes(currentUser._id);
+
+    if (!isAdmin) {
+        return res.status(403).json({
+            message: 'You are not an authorised to perform this ation'
+        });
+    }
+
+    if (organisation.admins.indexOf(userId) !== -1) {
+        return res.status(409).json({
+            message: 'User is already an admin of this organisation'
+        });
+    }
+
+    await organisation.admins.push(userId);
+    await organisation.save();
+
+    return res.status(200).json({
+        message: 'User made admin successfully'
+    });
+};
+
+// remove member from organisation
+const removeMember = async (req, res) => {
+    const { orgId, userId } = req.body;
+    const organisation = await orgModel.findById({ orgId });
+    const currentUser = req.user;
+    const isAdmin = organisation.admins.includes(currentUser._id);
+
+    if (!isAdmin) {
+        return res.status(403).json({
+            message: 'You are not an authorised to perform this ation'
+        });
+    }
+
+    if (organisation.members.indexOf(userId) === -1) {
+        return res.status(404).json({
+            message: 'User is not a member of this organisation'
+        });
+    }
+
+    await organisation.members.pull(userId);
+    await organisation.save();
+
+    const user = await req.userModel.findById(userId);
+    await user.organisations.pull(orgId);
+    await user.save();
+
+    await attendanceModel.deleteMany({user: userId, organisation: orgId});
+    await attendanceModel.save();
+
+    return res.status(200).json({
+        message: 'User removed successfully'
+    });
+};
 
 module.exports = {
     createOrg,
     addMember,
     getUserOrgs,
-    getOrgMembers
+    isAdmin,
+    getAllMembers,
+    makeAdmin,
+    removeMember
 };
