@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
 import {
   Button,
@@ -11,9 +10,7 @@ import {
   Stack,
   Image
 } from '@chakra-ui/react';
-import {
-  ArrowForwardIcon
-} from '@chakra-ui/icons';
+import { ArrowForwardIcon } from '@chakra-ui/icons';
 import LoginSvg from '../../assets/login.svg';
 
 export default function Register() {
@@ -31,7 +28,12 @@ export default function Register() {
             <Input focusBorderColor="purple.300" type="password" />
           </FormControl>
           <Stack spacing={4}>
-            <Button rightIcon={<ArrowForwardIcon />} colorScheme="purple" bg="purple.300" variant="solid">
+            <Button
+              rightIcon={<ArrowForwardIcon />}
+              colorScheme="purple"
+              bg="purple.300"
+              variant="solid"
+            >
               Login
             </Button>
             <Stack
@@ -39,7 +41,9 @@ export default function Register() {
               align="center"
               justify="center"
             >
-              <Link color="purple.500">Dont have an account? Sign up</Link>
+              <Link href="/register" color="purple.500">
+                Dont have an account? Sign up
+              </Link>
             </Stack>
           </Stack>
         </Stack>
