@@ -15,6 +15,7 @@
     "axios": "^0.27.2",
     "face-api.js": "^0.22.2",
     "framer-motion": "^6.3.3",
+    "fs": "^0.0.1-security",
     "prop-types": "^15.8.1",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
@@ -27,7 +28,7 @@
   },
   "scripts": {
     "start": "GENERATE_SOURCEMAP=false react-scripts start",
-    "build": "react-scripts build",
+    "build": "GENERATE_SOURCEMAP=false CI=false react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -36,6 +37,15 @@
       "react-app",
       "react-app/jest"
     ]
+  },
+  "browser": {
+    "crypto": false,
+    "fs": false,
+    "path": false,
+    "os": false,
+    "net": false,
+    "stream": false,
+    "tls": false
   },
   "browserslist": {
     "production": [
