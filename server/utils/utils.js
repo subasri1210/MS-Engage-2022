@@ -3,7 +3,6 @@ const multer = require('multer');
 const path = require('path');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user.model');
-let MAX_IMAGE_SIZE = 1024 * 1024 * 2;
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -24,8 +23,7 @@ const storage = multer.diskStorage({
 });
 
 var upload = multer({
-    storage: storage,
-    limits: { fileSize: MAX_IMAGE_SIZE }
+    storage: storage
 }).single('image');
 
 const checkAuth = async (req, res, next) => {

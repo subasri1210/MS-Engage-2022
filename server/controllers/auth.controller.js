@@ -5,8 +5,14 @@ const jwt = require('jsonwebtoken');
 
 const login = async (req, res) => {
     try {
+        const { email, password } = req.body;
+        if (!(email && password)) {
+            console.log('Please provide all required fields!');
+            return res.status(400).json({ error: 'Please provide all required fields!' });
+        }
         const user = await userModel.findByCredentials(req.body.email, req.body.password);
         if (!user) {
+            console.log('User not found');
             return res.status(400).json({ error: 'User not found' });
         }
         const token = await user.generateAuthToken();
@@ -62,7 +68,8 @@ const faceLogin = async (req, res) => {
         const token = await jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET);
         user.tokens = user.tokens.concat({ token });
         await user.save();
-
+    
+        console.log(user);
         res.status(200).json({ message: 'Login successful!' });
     } catch (err) {
         console.log(err);
@@ -79,10 +86,10 @@ const register = async (req, res) => {
 
         const findUser = await userModel.findOne({ email });
         if (findUser) {
-            return res.status(400).json({ error: 'User already exists!' });
+            return res.status(400).json({ error: 'User with this email already exists!' });
         }
-        if (req.file.filename == null || req.file.filename == undefined) {
-            res.status(400).json({ error: 'User Image not found' });
+        if (req.file == null || req.file == undefined) {
+            res.status(400).json({ error: 'Error while uploading the file' });
         }
 
         if ((await personGroupModel.estimatedDocumentCount()) == 0) {
@@ -95,26 +102,27 @@ const register = async (req, res) => {
 
         let [personId, createPersonErr] = await faceController.createPerson(email);
         if (createPersonErr) {
-            return res.status(400).json({ error: createPersonErr });
+            return res.status(400).json({ error: 'Something went wrong! Please try again later!' });
         }
 
         let [persistedFaceId, addFaceErr] = await faceController.createFace(personId, req.file.filename);
         if (addFaceErr) {
-            return res.status(400).json({ error: addFaceErr });
+            console.log('add face error');
+            return res.status(400).json({ error: 'Please upload an image with a single face!' });
         }
 
         let trainErr = await faceController.trainPersonGroup();
         if (trainErr) {
-            return res.status(400).json({ error: trainErr });
+            return res.status(400).json({ error: 'Error while training the faces! Please try again later!' });
         }
 
         const user = new userModel({ email, password, name, personId, persistedFaceId });
         await user.save();
 
-        res.status(201).json({ message: 'User created successfully!' });
+        res.status(201).json({ message: 'Successfully signed up!' });
     } catch (err) {
         console.log(err);
-        res.status(400).json({ error: 'Unable to create account' });
+        res.status(400).json({ error: 'Something went wrong! Please try again later!' });
     }
 };
 

@@ -1,7 +1,8 @@
 import React, {
   useState, useEffect, useRef, useCallback
 } from 'react';
-import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import {
   Box,
   Flex,
@@ -10,7 +11,9 @@ import {
   HStack,
   Button,
   IconButton,
-  Tooltip
+  Tooltip,
+  useBoolean,
+  useToast
 } from '@chakra-ui/react';
 import {
   FiRefreshCcw
@@ -18,15 +21,53 @@ import {
 import * as faceapi from 'face-api.js';
 import Webcam from 'react-webcam';
 import './styles.css';
+import { BACKEND_URL } from '../../config/config';
 
-export default function FaceRegister({ handleImageChange, handleRegister, isLoading }) {
+export default function FaceLogin() {
   const height = 560;
   const width = 720;
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const [video, setVideo] = useState(null);
+  const [image, setImage] = useState(null);
   const [imageCaptured, setImageCaptured] = useState(false);
   const [imageData, setImageData] = useState(null);
+  const [isLoading, setIsLoading] = useBoolean();
+  const toast = useToast();
+  const navigate = useNavigate();
+
+  const handleLoading = () => { setIsLoading.toggle(); };
+
+  const handleLogin = async () => {
+    handleLoading();
+    const form = new FormData();
+    form.append('image', image);
+    await axios({
+      method: 'post',
+      url: `${BACKEND_URL}/facelogin`,
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      },
+      data: form
+    })
+      .then((res) => {
+        handleLoading();
+        console.log(res.data);
+        navigate('/');
+      })
+      .catch((err) => {
+        handleLoading();
+        console.log(err.response.data.error);
+        toast({
+          title: 'Error',
+          description: err.response.data.error,
+          status: 'error',
+          duration: 5000,
+          position: 'top',
+          isClosable: true
+        });
+      });
+  };
 
   useEffect(() => {
     function addEvent() {
@@ -90,20 +131,14 @@ export default function FaceRegister({ handleImageChange, handleRegister, isLoad
       const file = new File([ba], 'image.jpeg', { type: 'image/jpeg' });
       const blob = new Blob([ba], { type: 'image/jpeg' });
       setImageData(URL.createObjectURL(blob));
-      handleImageChange(file);
+      setImage(file);
       setImageCaptured(true);
     },
     [videoRef]
   );
 
-  const handleImageDataChange = (event) => {
-    handleImageChange(event.target.files[0]);
-    setImageData(URL.createObjectURL(event.target.files[0]));
-    setImageCaptured(true);
-  };
-
   const handleClearImage = () => {
-    handleImageChange(null);
+    setImage(null);
     setImageData(null);
     setImageCaptured(false);
   };
@@ -147,14 +182,8 @@ export default function FaceRegister({ handleImageChange, handleRegister, isLoad
             <Button w={80} onClick={captureImage}>
               Capture Image
             </Button>
-            <input
-              type="file"
-              onChange={handleImageDataChange}
-              style={{ width: '230px' }}
-              title="Upload Image from your device"
-            />
             {imageCaptured && (
-              <Tooltip label="Clear uploaded image">
+              <Tooltip label="Retake">
                 <IconButton
                   variant="outline"
                   fontSize="20px"
@@ -171,12 +200,12 @@ export default function FaceRegister({ handleImageChange, handleRegister, isLoad
             colorScheme="purple"
             bg="purple.300"
             variant="solid"
-            onClick={handleRegister}
             mb={20}
             isLoading={isLoading}
-            loadingText="Registering"
+            loadingText="Logging in"
+            onClick={handleLogin}
           >
-            Register
+            Login
           </Button>
         </VStack>
       </VStack>
@@ -184,9 +213,3 @@ export default function FaceRegister({ handleImageChange, handleRegister, isLoad
     </>
   );
 }
-
-FaceRegister.propTypes = {
-  handleImageChange: PropTypes.func.isRequired,
-  handleRegister: PropTypes.func.isRequired,
-  isLoading: PropTypes.bool.isRequired
-};
