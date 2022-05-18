@@ -9,6 +9,7 @@ import Login from '../pages/Login';
 import FaceLogin from '../pages/FaceLogin';
 import Dashboard from '../pages/DashBoard';
 import OrgansationDashboardPage from '../pages/OrganisationDashboard';
+import SidebarWithHeader from '../components/SideBar/SideBar';
 
 export default function Routers() {
   return (
@@ -22,6 +23,7 @@ export default function Routers() {
         <Route path="/organizations/:orgId" element={<OrgansationDashboardPage />} />
         {/* <Route path="new" element={<NewTeamForm />} />
           <Route index element={<LeagueStandings />} /> */}
+        <Route path="/side" element={<SidebarWithHeader />} />
         <Route
           path="*"
           element={<Navigate to="/login" />}
