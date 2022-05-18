@@ -15,10 +15,10 @@ const attendanceSchema = new mongoose.Schema(
             ref: 'user'
         },
         intime: {
-            type: Date
+            type: String
         },
         outime: {
-            type: Date
+            type: String
         },
         status: {
             type: String,

@@ -1,0 +1,16 @@
+input[type="time"] {
+  border: none !important;
+  font-size: 15px !important;
+  width: 105px !important;
+  padding: 10px !important;
+}
+
+.input-container-dark input[type="time"] {
+  color: #fcfefe !important;
+  background: #394353 !important;
+}
+
+.input-container-light input[type="time"] {
+  color: #000 !important;
+  background: #e2e8f0 !important;
+}

@@ -24,10 +24,22 @@ const createOrg = async (req, res) => {
     try {
         const { name, description, inTime, outTime } = req.body;
 
-        if (!(name && inTime && outTime)) {
+        if (!(name && description && inTime && outTime)) {
             return res.status(400).json({
-                message: 'Please provide all required fields'
+                error: 'Please provide all required fields'
             });
+        }
+
+        if (name.length === 0) {
+            return res.status(400).json({ error: 'Organisation name cannot be empty' });
+        } else if (description.length === 0) {
+            return res.status(400).json({ error: 'Organisation description cannot be empty' });
+        } else if (inTime.start === '' || inTime.end === ''
+            || outTime.start === '' || outTime.end === ''
+            || inTime.start > inTime.end || outTime.start > outTime.end
+            || inTime.start > outTime.start || inTime.end > outTime.end
+        ) {
+            return res.status(400).json({ error: 'Please provide a valid time range' });
         }
 
         const org = await new orgModel({ name, description, inTime, outTime });
@@ -37,6 +49,8 @@ const createOrg = async (req, res) => {
         const user = req.user;
         user.organisations.push(org._id);
         await user.save();
+
+        console.log(org);
 
         return res.status(200).json({
             message: 'Organisation created successfully'
@@ -55,14 +69,25 @@ const getUserOrgs = async (req, res) => {
         const user = await userModel.findById(req.user._id).populate('organisations');
         const orgs = user.organisations;
 
+        const orgData = orgs.map((data) => {
+            return {
+                orgId: data._id,
+                name: data.name,
+                description: data.description,
+                inTime: data.inTime,
+                outTime: data.outTime,
+                location: data.location
+            };
+        });
+
         return res.status(200).json({
             message: 'Organisations fetched successfully',
-            data: orgs
+            data: orgData
         });
     } catch (err) {
         console.log(err);
         return res.status(500).json({
-            message: 'Something went wrong'
+            err: 'Something went wrong'
         });
     }
 };

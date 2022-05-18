@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable react/no-children-prop */
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -61,9 +62,13 @@ export default function Login() {
         password
       })
     })
-      .then((res) => {
+      .then((response) => {
+        console.log(response.data);
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('_id', response.data.user._id);
+        localStorage.setItem('email', response.data.user.email);
+        localStorage.setItem('name', response.data.user.name);
         handleLoading();
-        console.log(res.data);
         navigate('/');
       })
       .catch((err) => {

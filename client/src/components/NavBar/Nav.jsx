@@ -12,14 +12,23 @@ import {
   CloseButton,
   useColorMode
 } from '@chakra-ui/react';
+import { useNavigate } from 'react-router-dom';
 import { BsEmojiSmile } from 'react-icons/bs';
 import { AiOutlineMenu, AiOutlineUser } from 'react-icons/ai';
 import { FiSun, FiMoon, FiLogOut } from 'react-icons/fi';
+import { CgOrganisation } from 'react-icons/cg';
+import { logout } from '../../config/auth';
 
 export default function Gslr() {
   const bg = useColorModeValue('white', 'gray.800');
   const mobileNav = useDisclosure();
   const { colorMode, toggleColorMode } = useColorMode();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    logout();
+    navigate('/');
+  };
 
   return (
     <chakra.header
@@ -49,16 +58,19 @@ export default function Gslr() {
             mr={1}
             display={{ base: 'none', md: 'inline-flex' }}
           >
-            <Button fontSize={20} fontWeight={300} variant="ghost">Organizations</Button>
             <IconButton
-              onClick={toggleColorMode}
-              icon={colorMode === 'dark' ? <FiSun /> : <FiMoon />}
+              icon={<CgOrganisation />}
             />
             <IconButton
               icon={<AiOutlineUser />}
             />
             <IconButton
               icon={<FiLogOut />}
+              onClick={handleLogout}
+            />
+            <IconButton
+              onClick={toggleColorMode}
+              icon={colorMode === 'dark' ? <FiSun /> : <FiMoon />}
             />
           </HStack>
           <Box display={{ base: 'inline-flex', md: 'none' }}>

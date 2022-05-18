@@ -7,13 +7,13 @@ const faceController = require('../controllers/faceapi.controller');
 
 const getDashboardData = async (req, res) => {
     const { orgId } = req.body;
-    const organisation = orgModel.findById({ orgId });
+    const organisation = await orgModel.findById(orgId);
     const currentUser = req.user;
     const isAdmin = organisation.admins.includes(currentUser._id);
 
     if (!isAdmin && !organisation.members.includes(currentUser._id)) {
         return res.status(401).json({
-            message: 'You are not authorized to view this page'
+            error: 'You are not authorized to view this page'
         });
     }
 
@@ -47,13 +47,11 @@ const getDashboardData = async (req, res) => {
             };
         });
         return res.status(200).json({
-            message: 'Dashboard data fetched successfully!',
-            data: {
-                totalEmployees,
-                totalIns,
-                totalOuts,
-                attendanceLog
-            }
+            isAdmin,
+            totalEmployees,
+            totalIns,
+            totalOuts,
+            attendanceLog
         });
     } else {
         // member dashboard data
@@ -79,12 +77,10 @@ const getDashboardData = async (req, res) => {
         }
         // handle whether user is marking attendance in proper intime or outime in frontend
         return res.status(200).json({
-            message: 'Dashboard data fetched successfully!',
-            data: {
-                attendanceResponse,
-                actualInTime: organisation.intime,
-                actualOutTime: organisation.outtime
-            }
+            isAdmin,
+            attendanceResponse,
+            actualInTime: organisation.intime,
+            actualOutTime: organisation.outtime
         });
     }
 };

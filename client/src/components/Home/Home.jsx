@@ -41,6 +41,7 @@ export default function Home() {
             rounded="full"
             px={10}
             py={6}
+            onClick={() => { navigate('/organizations'); }}
           >
             Get started
           </Button>
@@ -54,7 +55,7 @@ export default function Home() {
             Login
           </Button>
         </Stack>
-        <Image src={HeroPageImage} alt="Bug fixing" w={500} h={500} />
+        <Image src={HeroPageImage} alt="Face recognition" w={500} h={500} />
       </Stack>
     </Container>
   );

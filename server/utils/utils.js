@@ -28,7 +28,9 @@ var upload = multer({
 
 const checkAuth = async (req, res, next) => {
     try {
+        console.log('inside check auth');
         const token = req.header('Authorization').replace('Bearer ', '');
+        console.log('token', token);
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const user = await User.findOne({
             _id: decoded._id,
@@ -41,7 +43,7 @@ const checkAuth = async (req, res, next) => {
         req.user = user;
         next();
     } catch (err) {
-        res.status(401).send({ error: 'please authenticate' });
+        res.status(401).send({ error: 'Please authenticate' });
     }
 };
 

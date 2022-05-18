@@ -70,7 +70,7 @@ const faceLogin = async (req, res) => {
         await user.save();
     
         console.log(user);
-        res.status(200).json({ message: 'Login successful!' });
+        res.status(200).json({ token, user: { _id: user._id, name: user.name, email: user.email } });
     } catch (err) {
         console.log(err);
         res.status(400).json({ error: 'Unable to login' });

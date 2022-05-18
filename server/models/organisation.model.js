@@ -25,18 +25,18 @@ const organisationSchema = new mongoose.Schema(
         ],
         inTime: {
             start: {
-                type: Date
+                type: String
             },
             end: {
-                type: Date
+                type: String
             }
         },
         outTime: {
             start: {
-                type: Date
+                type: String
             },
             end: {
-                type: Date
+                type: String
             }
         },
         location: {
