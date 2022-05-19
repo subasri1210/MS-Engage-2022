@@ -50,7 +50,7 @@ export default function OrgansationDashboardPage() {
   }, []);
 
   return (
-    <SidebarWithHeader isAdmin={isAdmin} url={url}>
+    <SidebarWithHeader isAdmin={isAdmin} url={url} orgId={orgId}>
       <DashBoard orgData={orgData} />
     </SidebarWithHeader>
   );

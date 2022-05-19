@@ -99,28 +99,34 @@ const addMember = async (req, res) => {
 
         if (!(orgId && email)) {
             return res.status(400).json({
-                message: 'Please provide all required fields'
+                error: 'Please provide all required fields'
             });
         }
 
         const org = await orgModel.findById(orgId);
-        const user = await req.userModel.findOne({ email });
+        const user = await userModel.findOne({ email });
 
-        if (!org || !user) {
+        if (!org) {
             return res.status(404).json({
-                message: 'Organisation or user not found'
+                error: 'Organisation or user not found'
+            });
+        }
+
+        if (!user) {
+            return res.status(404).json({
+                error: 'User with this email not found!'
             });
         }
 
         if (org.admins.indexOf(req.user._id) === -1) {
             return res.status(403).json({
-                message: 'You are not an admin of this organisation'
+                error: 'You are not an admin of this organisation'
             });
         }
 
         if (org.members.indexOf(user._id) !== -1) {
             return res.status(409).json({
-                message: 'User is already a member of this organisation'
+                error: 'User with this email is already a member of this organisation'
             });
         }
 
@@ -136,7 +142,7 @@ const addMember = async (req, res) => {
     } catch (err) {
         console.log(err);
         return res.status(500).json({
-            message: 'Something went wrong'
+            error: 'Something went wrong'
         });
     }
 };
@@ -144,7 +150,7 @@ const addMember = async (req, res) => {
 // get data of all members of an organisation
 const getAllMembers = async (req, res) => {
     const { orgId } = req.body;
-    const organisation = await orgModel.findById({ orgId }).populate({
+    const organisation = await orgModel.findById(orgId).populate({
         path: 'members',
         select: ['name', 'email']
     });

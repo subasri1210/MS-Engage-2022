@@ -21,7 +21,12 @@ import {
   MenuButton,
   MenuItem,
   MenuList,
-  useColorMode
+  useColorMode,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalCloseButton,
+  ModalBody
 } from '@chakra-ui/react';
 import {
   FiMenu,
@@ -34,50 +39,60 @@ import { BsEmojiSmile } from 'react-icons/bs';
 import { CgOrganisation } from 'react-icons/cg';
 import { MdOutlinePersonAdd, MdOutlinePeopleAlt } from 'react-icons/md';
 import { logout } from '../../config/auth';
+import AddNewMember from './AddNewMember';
 
 export default function SidebarWithHeader({
-  children, isAdmin, url
+  children, isAdmin, url, orgId
 }) {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen: sideBarIsOpen, onOpen: sideBarOnOpen, onClose: sideBarOnClose } = useDisclosure();
+  const { isOpen: modalIsOpen, onToggle: modalOnToggle, onClose: modalOnClose } = useDisclosure();
   return (
     <Box minH="100vh" bg={useColorModeValue('gray.100', 'gray.900')}>
       <SidebarContent
-        onClose={() => onClose}
+        onClose={() => sideBarOnClose}
         display={{ base: 'none', md: 'block' }}
+        modalOnToggle={modalOnToggle}
+        url={url}
       />
       <Drawer
         autoFocus={false}
-        isOpen={isOpen}
+        isOpen={sideBarIsOpen}
         placement="left"
-        onClose={onClose}
+        onClose={sideBarOnClose}
         returnFocusOnClose={false}
-        onOverlayClick={onClose}
+        onOverlayClick={sideBarOnClose}
         size="full"
       >
         <DrawerContent>
-          <SidebarContent onClose={onClose} url={url} />
+          <SidebarContent onClose={sideBarOnClose} modalOnToggle={modalOnToggle} url={url} />
         </DrawerContent>
       </Drawer>
       {/* mobilenav */}
       {
         isAdmin && (
-          <MobileNav onOpen={onOpen} isAdmin={isAdmin} />
+          <MobileNav onOpen={sideBarOnOpen} isAdmin={isAdmin} />
         )
       }
       <Box ml={{ base: 0, md: 60 }} p="4">
         {children}
+        <Modal isOpen={modalIsOpen} onClose={modalOnClose}>
+          <ModalOverlay />
+          <ModalContent p={6} minW="550px">
+            <ModalCloseButton />
+            <ModalBody>
+              <AddNewMember orgId={orgId} />
+            </ModalBody>
+          </ModalContent>
+        </Modal>
       </Box>
     </Box>
   );
 }
 
-function SidebarContent({ onClose, url, ...rest }) {
+function SidebarContent({
+  onClose, url, modalOnToggle, ...rest
+}) {
   const navigate = useNavigate();
-  const LinkItems = [
-    { name: 'Home', icon: FiHome, url },
-    { name: 'Add Employee', icon: MdOutlinePersonAdd, url: `${url}/add-employee` },
-    { name: 'Employees', icon: MdOutlinePeopleAlt, url: `${url}/employees` }
-  ];
   return (
     <Box
       transition="3s ease"
@@ -98,15 +113,15 @@ function SidebarContent({ onClose, url, ...rest }) {
         </HStack>
         <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
       </Flex>
-      {LinkItems.map((link) => (
-        <NavItem
-          key={link.name}
-          icon={link.icon}
-          onClick={() => navigate(link.url)}
-        >
-          {link.name}
-        </NavItem>
-      ))}
+      <NavItem icon={FiHome} onClick={() => navigate(url)}>
+        Home
+      </NavItem>
+      <NavItem icon={MdOutlinePersonAdd} onClick={modalOnToggle}>
+        Add Employee
+      </NavItem>
+      <NavItem icon={MdOutlinePeopleAlt} onClick={() => navigate(`${url}/employees`)}>
+        Home
+      </NavItem>
     </Box>
   );
 }
@@ -177,7 +192,7 @@ function MobileNav({ onOpen, isAdmin, ...rest }) {
         FaceFirst
       </Text>
 
-      <HStack spacing={{ base: '0', md: '6' }}>
+      <HStack spacing={{ base: '3', md: '6' }}>
         <IconButton
           onClick={toggleColorMode}
           icon={colorMode === 'dark' ? <FiSun /> : <FiMoon />}
