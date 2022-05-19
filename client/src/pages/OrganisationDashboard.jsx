@@ -5,7 +5,8 @@ import {
   useParams
 } from 'react-router-dom';
 import { toast } from '@chakra-ui/react';
-import DashBoard from '../components/Organization/Dashboard';
+import AdminDashBoard from '../components/Organization/AdminDashboard';
+import EmployeeDashBoard from '../components/Organization/EmployeeDasboard';
 import SidebarWithHeader from '../components/SideBar/SideBar';
 import { BACKEND_URL } from '../config/config';
 
@@ -51,7 +52,13 @@ export default function OrgansationDashboardPage() {
 
   return (
     <SidebarWithHeader isAdmin={isAdmin} url={url} orgId={orgId}>
-      <DashBoard orgData={orgData} />
+      {
+        isAdmin ? (
+          <AdminDashBoard orgData={orgData} />
+        ) : (
+          <EmployeeDashBoard orgData={orgData} />
+        )
+      }
     </SidebarWithHeader>
   );
 }

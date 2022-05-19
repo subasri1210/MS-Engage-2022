@@ -53,6 +53,7 @@ export default function SidebarWithHeader({
         display={{ base: 'none', md: 'block' }}
         modalOnToggle={modalOnToggle}
         url={url}
+        isAdmin={isAdmin}
       />
       <Drawer
         autoFocus={false}
@@ -64,15 +65,16 @@ export default function SidebarWithHeader({
         size="full"
       >
         <DrawerContent>
-          <SidebarContent onClose={sideBarOnClose} modalOnToggle={modalOnToggle} url={url} />
+          <SidebarContent
+            onClose={sideBarOnClose}
+            modalOnToggle={modalOnToggle}
+            url={url}
+            isAdmin={isAdmin}
+          />
         </DrawerContent>
       </Drawer>
       {/* mobilenav */}
-      {
-        isAdmin && (
-          <MobileNav onOpen={sideBarOnOpen} isAdmin={isAdmin} />
-        )
-      }
+      <MobileNav onOpen={sideBarOnOpen} isAdmin={isAdmin} />
       <Box ml={{ base: 0, md: 60 }} p="4">
         {children}
         <Modal isOpen={modalIsOpen} onClose={modalOnClose}>
@@ -90,7 +92,7 @@ export default function SidebarWithHeader({
 }
 
 function SidebarContent({
-  onClose, url, modalOnToggle, ...rest
+  onClose, url, modalOnToggle, isAdmin, ...rest
 }) {
   const navigate = useNavigate();
   return (
@@ -114,13 +116,17 @@ function SidebarContent({
         <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
       </Flex>
       <NavItem icon={FiHome} onClick={() => navigate(url)}>
-        Home
+        {isAdmin ? 'Dashboard' : 'Attendance'}
       </NavItem>
-      <NavItem icon={MdOutlinePersonAdd} onClick={modalOnToggle}>
-        Add Employee
-      </NavItem>
+      {
+        isAdmin && (
+          <NavItem icon={MdOutlinePersonAdd} onClick={modalOnToggle}>
+            Add Employee
+          </NavItem>
+        )
+      }
       <NavItem icon={MdOutlinePeopleAlt} onClick={() => navigate(`${url}/employees`)}>
-        Home
+        All Employees
       </NavItem>
     </Box>
   );

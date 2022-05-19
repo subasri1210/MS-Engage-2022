@@ -154,10 +154,11 @@ const identifyPerson = async (faceId) => {
     return [identifyPersonResponse, error];
 };
 
-const verifyFace = (faceId, personId) => {
+const verifyFace = async(faceId, personId) => {
+
     let verifyFaceResponse = null,
         error = null;
-    axios({
+    await axios({
         method: 'post',
         baseURL: `${api_base_url}/face/v1.0/verify`,
         headers: {

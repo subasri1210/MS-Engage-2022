@@ -47,6 +47,7 @@ const getDashboardData = async (req, res) => {
             };
         });
         return res.status(200).json({
+            orgName: organisation.name,
             isAdmin,
             totalEmployees,
             totalIns,
@@ -64,30 +65,33 @@ const getDashboardData = async (req, res) => {
         let attendanceResponse = '';
 
         //didn't registered intime
-        if (!(attendanceRecorded.intime && attendanceRecorded.outime)) {
-            attendanceResponse = 'nointime';
+        if (!attendanceRecorded) {
+            attendanceResponse = 'Not marked in';
         } else {
             //registered intime but not outtime
             if (attendanceRecorded.intime && !attendanceRecorded.outime) {
-                attendanceResponse = 'in';
+                attendanceResponse = 'In';
             } else if (attendanceRecorded.intime && attendanceRecorded.outime) {
                 // registered outtime
-                attendanceResponse = 'out';
+                attendanceResponse = 'Out';
             }
         }
-        // handle whether user is marking attendance in proper intime or outime in frontend
+
         return res.status(200).json({
             isAdmin,
             attendanceResponse,
-            actualInTime: organisation.intime,
-            actualOutTime: organisation.outtime
+            orgId: organisation._id,
+            orgName: organisation.name,
+            organisationInTime: organisation.inTime,
+            organisationOutTime: organisation.outTime
         });
     }
 };
 
+// register attendance by employee
 const registerAttendance = async (req, res) => {
     const { orgId } = req.body;
-    const organisation = orgModel.findById({ orgId });
+    const organisation = await orgModel.findById(orgId);
     const currentUser = req.user;
 
     if (!organisation.members.includes(currentUser._id)) {
@@ -126,7 +130,7 @@ const registerAttendance = async (req, res) => {
     }
 
     // add attendance
-    let attendance = attendanceModel.findOne({
+    let attendance = await attendanceModel.findOne({
         organisation: orgId,
         user: currentUser._id,
         date: { $gte: startOfDay(new Date()), $lte: endOfDay(new Date()) }
@@ -142,14 +146,16 @@ const registerAttendance = async (req, res) => {
             return res.status(200).json({ message: 'Out attendance marked' });
         }
     } else {
-        attendance = new attendanceModel({
+        attendance = await new attendanceModel({
             organisation: orgId,
             user: currentUser._id,
             date: new Date(),
             intime: new Date(),
             status: 'in'
         });
+        await attendance.save();
     }
+    res.status(200).json({ message: 'attendance marked' });
 };
 
 module.exports = {
