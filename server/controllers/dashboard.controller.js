@@ -4,6 +4,7 @@ const endOfDay = require('date-fns/endOfDay');
 const orgModel = require('../models/organisation.model');
 const attendanceModel = require('../models/attendance.model');
 const faceController = require('../controllers/faceapi.controller');
+const userModel = require('../models/user.model');
 
 const getDashboardData = async (req, res) => {
     const { orgId } = req.body;
@@ -31,27 +32,51 @@ const getDashboardData = async (req, res) => {
             date: { $gte: startOfDay(new Date()), $lte: endOfDay(new Date()) },
             outime: { $exists: true }
         });
-        const attendanceRecorded = await attendanceModel
-            .find({
-                organisation: orgId,
-                date: { $gte: startOfDay(new Date()), $lte: endOfDay(new Date()) }
-            })
-            .populate('user', 'name');
 
-        const attendanceLog = attendanceRecorded.map((data) => {
-            return {
-                name: data.user.name,
-                intime: data.intime,
-                outime: data.outime,
-                status: data.status
-            };
+        const attendanceLogInfo = organisation.members.map(async (member) => {
+            let attendance = await attendanceModel.findOne({
+                organisation: orgId,
+                user: member,
+                date: { $gte: startOfDay(new Date()), $lte: endOfDay(new Date()) }
+            }).populate('user', 'name');
+            if (!attendance) {
+                let user = await userModel.findById(member);
+                return {
+                    name: user.name,
+                    intime: '-',
+                    outime: '-',
+                    status: 'Not marked in'
+                };
+            }
+            else {
+                let intime = '-', outime = '-';
+                if (attendance.intime) {
+                    intime = new Date(attendance.intime);
+                    intime = intime.getHours() + ':' + intime.getMinutes();
+                }
+                if (attendance.outime) {
+                    outime = new Date(attendance.outime);
+                    outime = outime.getHours() + ':' + outime.getMinutes();
+                }
+                return {
+                    name: attendance.user.name,
+                    intime,
+                    outime,
+                    status: attendance.status
+                };
+            }
         });
+
+        const attendanceLog = await Promise.all(attendanceLogInfo);
+
         return res.status(200).json({
             orgName: organisation.name,
             isAdmin,
             totalEmployees,
             totalIns,
             totalOuts,
+            organisationInTime: organisation.inTime,
+            organisationOutTime: organisation.outTime,
             attendanceLog
         });
     } else {
@@ -141,7 +166,7 @@ const registerAttendance = async (req, res) => {
             return res.status(400).json({ error: 'Already marked attendance' });
         } else if (attendance.intime && !attendance.outime) {
             attendance.outime = new Date();
-            attendance.status = 'out';
+            attendance.status = 'Out';
             await attendance.save();
             return res.status(200).json({ message: 'Out attendance marked' });
         }
@@ -151,7 +176,7 @@ const registerAttendance = async (req, res) => {
             user: currentUser._id,
             date: new Date(),
             intime: new Date(),
-            status: 'in'
+            status: 'In'
         });
         await attendance.save();
     }

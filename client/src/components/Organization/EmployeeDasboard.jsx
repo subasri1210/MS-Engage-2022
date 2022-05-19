@@ -78,7 +78,6 @@ function EmployeeDashBoard({ orgData }) {
   }
 
   const getHeaderText = () => {
-    console.log('inside getHeaderText');
     if (timeStatus === 'none') {
       return 'You can mark your attendance only during in the organisation in-time or out-time!';
     } if (timeStatus === 'intime' && attStatus === 'notin') {
