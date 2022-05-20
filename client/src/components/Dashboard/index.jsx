@@ -18,7 +18,6 @@ import {
   Image
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
-import Navbar from '../NavBar/Nav';
 import OrgCard from './OrgCard';
 import CreateOrgForm from './CreateOrgForm';
 import NoOrgsSvg from '../../assets/no_orgs.svg';
@@ -35,7 +34,6 @@ export default function Organization({ userData, userOrgs }) {
 
   return (
     <>
-      <Navbar />
       <Container maxW="container.lg">
         <Stack direction={['column', 'column', 'row']} align={['center', 'center', 'end']} mb={8}>
           <Box mt={10}>

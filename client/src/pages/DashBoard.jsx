@@ -1,14 +1,18 @@
-import { useToast } from '@chakra-ui/react';
+import {
+  Box, useToast, Center, Spinner
+} from '@chakra-ui/react';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Organization from '../components/Dashboard';
 import { authCheck } from '../config/auth';
 import { BACKEND_URL } from '../config/config';
+import Navbar from '../components/NavBar/Nav';
 
 export default function DashBoard() {
   const [userData, setUserData] = useState(null);
   const [userOrgs, setUserOrgs] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const toast = useToast();
   const token = localStorage.getItem('token');
@@ -37,6 +41,7 @@ export default function DashBoard() {
         .then((res) => {
           console.log(res.data.data);
           setUserOrgs(res.data.data);
+          setIsLoading(false);
         })
         .catch((err) => {
           console.log(err.response.data.error);
@@ -53,6 +58,25 @@ export default function DashBoard() {
   }, []);
 
   return (
-    <Organization userData={userData} userOrgs={userOrgs} />
+    <>
+      <Navbar />
+      <Box>
+        {
+          isLoading ? (
+            <Center>
+              <Spinner
+                thickness="4px"
+                speed="0.65s"
+                emptyColor="gray.200"
+                color="purple.500"
+                size="xl"
+              />
+            </Center>
+          ) : (
+            <Organization userData={userData} userOrgs={userOrgs} />
+          )
+        }
+      </Box>
+    </>
   );
 }

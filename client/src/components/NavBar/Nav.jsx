@@ -19,7 +19,7 @@ import { FiSun, FiMoon, FiLogOut } from 'react-icons/fi';
 import { CgOrganisation } from 'react-icons/cg';
 import { logout } from '../../config/auth';
 
-export default function Gslr() {
+export default function Navbar() {
   const bg = useColorModeValue('white', 'gray.800');
   const mobileNav = useDisclosure();
   const { colorMode, toggleColorMode } = useColorMode();

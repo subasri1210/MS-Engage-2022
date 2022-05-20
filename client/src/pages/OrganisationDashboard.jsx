@@ -1,10 +1,11 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable object-shorthand */
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import {
   useParams
 } from 'react-router-dom';
-import { toast } from '@chakra-ui/react';
+import { toast, Center, Spinner } from '@chakra-ui/react';
 import AdminDashBoard from '../components/Organization/AdminDashboard';
 import EmployeeDashBoard from '../components/Organization/EmployeeDasboard';
 import SidebarWithHeader from '../components/SideBar/SideBar';
@@ -16,6 +17,7 @@ export default function OrgansationDashboardPage() {
   const token = localStorage.getItem('token');
   const [orgData, setOrgData] = useState(null);
   const [isAdmin, setIsAdmin] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const getDashboardData = async () => {
@@ -34,6 +36,7 @@ export default function OrgansationDashboardPage() {
           console.log(res.data);
           setOrgData(res.data);
           setIsAdmin(res.data.isAdmin);
+          setIsLoading(false);
         })
         .catch((err) => {
           console.log(err.response.data.error);
@@ -53,10 +56,22 @@ export default function OrgansationDashboardPage() {
   return (
     <SidebarWithHeader isAdmin={isAdmin} url={url} orgId={orgId}>
       {
-        isAdmin ? (
-          <AdminDashBoard orgData={orgData} />
+        isLoading ? (
+          <Center>
+            <Spinner
+              thickness="4px"
+              speed="0.65s"
+              emptyColor="gray.200"
+              color="purple.500"
+              size="xl"
+            />
+          </Center>
         ) : (
-          <EmployeeDashBoard orgData={orgData} />
+          isAdmin ? (
+            <AdminDashBoard orgData={orgData} />
+          ) : (
+            <EmployeeDashBoard orgData={orgData} />
+          )
         )
       }
     </SidebarWithHeader>
