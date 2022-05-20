@@ -125,7 +125,7 @@ function SidebarContent({
           </NavItem>
         )
       }
-      <NavItem icon={MdOutlinePeopleAlt} onClick={() => navigate(`${url}/employees`)}>
+      <NavItem icon={MdOutlinePeopleAlt} onClick={() => navigate(`${url}/members`)}>
         All Employees
       </NavItem>
     </Box>

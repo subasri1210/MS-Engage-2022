@@ -150,32 +150,37 @@ const addMember = async (req, res) => {
 // get data of all members of an organisation
 const getAllMembers = async (req, res) => {
     const { orgId } = req.body;
+    const org = await orgModel.findById(orgId);
     const organisation = await orgModel.findById(orgId).populate({
         path: 'members',
         select: ['name', 'email']
+    }).populate({
+        path: 'admins',
+        select: ['name', 'email']
     });
     const currentUser = req.user;
-    const isAdmin = organisation.admins.includes(currentUser._id);
+    const isAdmin = org.admins.includes(currentUser._id);
 
-    let user;
-    if (isAdmin) {
-        user = 'admin';
-    } else {
-        user = 'member';
-    }
-
-    const members = organisation.members;
-    const memberData = members.map((data) => {
+    const membersData = organisation.members.map((data) => {
         return {
-            currentUser: user,
             userid: data._id,
             name: data.name,
             email: data.email
         };
     });
+
+    const adminsData = organisation.admins.map((data) => {
+        return {
+            userid: data._id,
+            name: data.name,
+            email: data.email
+        };
+    });
+
     return res.status(200).json({
-        message: 'Members fetched successfully',
-        data: memberData
+        isAdmin,
+        membersData,
+        adminsData
     });
 };
 

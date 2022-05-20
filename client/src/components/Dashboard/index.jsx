@@ -46,7 +46,7 @@ export default function Organization({ userData, userOrgs }) {
         </Stack>
         { orgLength === 0 && (
           <Stack align="center">
-            <Image src={NoOrgsSvg} alt="Face recognition" w={500} h={500} />
+            <Image src={NoOrgsSvg} alt="No organisation" w={500} h={500} />
             <Heading fontWeight="semibold" fontSize="md">
               You are not a part of any organizations yet! Create one now!
             </Heading>

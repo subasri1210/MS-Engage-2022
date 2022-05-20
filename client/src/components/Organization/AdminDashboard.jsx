@@ -21,11 +21,13 @@ import {
   Td,
   Tbody,
   Spacer,
-  Box
+  Box,
+  Image
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { FaSignInAlt, FaSignOutAlt } from 'react-icons/fa';
 import { FiUser, FiUserX } from 'react-icons/fi';
+import NoEmployeeSvg from '../../assets/no_employees.svg';
 
 function AdminDashBoard({ orgData }) {
   console.log('orgData', orgData);
@@ -72,35 +74,48 @@ function AdminDashBoard({ orgData }) {
         </SimpleGrid>
       </VStack>
       <Spacer />
-      <Flex mt={20}>
-        <Box>
-          <Heading as="h4" size="md">
-            Today&apos;s attendance log
-          </Heading>
-        </Box>
-        <Spacer />
-        <Box>
-          <Text as="h3" fontSize="md" noOfLines={2} color="gray.400">
-            Organisation In-time :
-            {' '}
-            {orgData.organisationInTime.start}
-            {' '}
-            -
-            {' '}
-            {orgData.organisationInTime.end}
-          </Text>
-          <Text as="h3" fontSize="md" noOfLines={2} color="gray.400">
-            Organisation Out-time :
-            {' '}
-            {orgData.organisationOutTime.start}
-            {' '}
-            -
-            {' '}
-            {orgData.organisationOutTime.end}
-          </Text>
-        </Box>
-      </Flex>
-      <LogTable attData={orgData.attendanceLog} />
+      {
+        orgData.totalEmployees !== 0 ? (
+          <>
+            <Flex mt={20}>
+              <Box>
+                <Heading as="h4" size="md">
+                  Today&apos;s attendance log
+                </Heading>
+              </Box>
+              <Spacer />
+              <Box>
+                <Text as="h3" fontSize="md" noOfLines={2} color="gray.400">
+                  Organisation In-time :
+                  {' '}
+                  {orgData.organisationInTime.start}
+                  {' '}
+                  -
+                  {' '}
+                  {orgData.organisationInTime.end}
+                </Text>
+                <Text as="h3" fontSize="md" noOfLines={2} color="gray.400">
+                  Organisation Out-time :
+                  {' '}
+                  {orgData.organisationOutTime.start}
+                  {' '}
+                  -
+                  {' '}
+                  {orgData.organisationOutTime.end}
+                </Text>
+              </Box>
+            </Flex>
+            <LogTable attData={orgData.attendanceLog} />
+          </>
+        ) : (
+          <Stack align="center" mt={10}>
+            <Heading fontWeight="semibold" fontSize="md">
+              Add Employees to your organisation to view their attendance log!
+            </Heading>
+            <Image src={NoEmployeeSvg} alt="No Employees" w={500} h={500} />
+          </Stack>
+        )
+      }
     </Container>
   );
 }
