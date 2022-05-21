@@ -7,10 +7,13 @@ import {
   VStack,
   useColorMode,
   HStack,
-  Select
+  Select,
+  Stack,
+  Image
 } from '@chakra-ui/react';
 import { DatePicker } from 'chakra-ui-date-input';
 import { Bar } from 'react-chartjs-2';
+import NoEmployeeSvg from '../../assets/no_employees.svg';
 
 export default function AdminAnalytics({
   dateValue, handleChangeDateValue, dateAnalytics, monthValue,
@@ -110,64 +113,77 @@ export default function AdminAnalytics({
 
   return (
     <Container maxW="6xl" mt={10}>
-      <VStack spacing={10} align="start">
-        <Heading as="h4" size="md">
-          Attendance Analytics by Date
-        </Heading>
-        <Box maxW="40">
-          <DatePicker
-            value={dateValue}
-            name="date"
-            dateFormat="YYYY-MM-DD"
-            onChange={(date) => handleChangeDateValue(date)}
-          />
-        </Box>
-      </VStack>
-      <VStack spacing={10} align="start" mt={10}>
-        <Box width="2xl">
-          <Bar data={barChartData} options={options} />
-        </Box>
-      </VStack>
+      {
+        totalEmployees !== 0 ? (
+          <>
+            <VStack spacing={10} align="start">
+              <Heading as="h4" size="md">
+                Attendance Analytics by Date
+              </Heading>
+              <Box maxW="40">
+                <DatePicker
+                  value={dateValue}
+                  name="date"
+                  dateFormat="YYYY-MM-DD"
+                  onChange={(date) => handleChangeDateValue(date)}
+                />
+              </Box>
+            </VStack>
+            <VStack spacing={10} align="start" mt={10}>
+              <Box width="2xl">
+                <Bar data={barChartData} options={options} />
+              </Box>
+            </VStack>
+            <VStack spacing={10} align="start" mt={20}>
+              <Heading as="h4" size="md">
+                Attendance Analytics by Month
+              </Heading>
+              <Box maxW="8xl">
+                <HStack spacing={10}>
+                  <Select
+                    placeholder="Select Month"
+                    value={monthValue}
+                    onChange={(e) => handleMonthValue(e.target.value)}
+                  >
+                    <option value="1">January</option>
+                    <option value="2">February</option>
+                    <option value="3">March</option>
+                    <option value="4">April</option>
+                    <option value="5">May</option>
+                    <option value="6">June</option>
+                    <option value="7">July</option>
+                    <option value="8">August</option>
+                    <option value="9">September</option>
+                    <option value="10">October</option>
+                    <option value="11">November</option>
+                    <option value="12">December</option>
+                  </Select>
+                  <Select
+                    placeholder="Select Year"
+                    value={yearValue}
+                    onChange={(e) => handleYearValue(e.target.value)}
+                  >
+                    {getYears()}
+                  </Select>
+                </HStack>
+              </Box>
+            </VStack>
+            <VStack spacing={10} align="start" mt={10}>
+              <Box width="2xl">
+                <Bar data={monthBarChartData} options={monthOptions} />
+              </Box>
+            </VStack>
 
-      <VStack spacing={10} align="start" mt={20}>
-        <Heading as="h4" size="md">
-          Attendance Analytics by Month
-        </Heading>
-        <Box maxW="8xl">
-          <HStack spacing={10}>
-            <Select
-              placeholder="Select Month"
-              value={monthValue}
-              onChange={(e) => handleMonthValue(e.target.value)}
-            >
-              <option value="1">January</option>
-              <option value="2">February</option>
-              <option value="3">March</option>
-              <option value="4">April</option>
-              <option value="5">May</option>
-              <option value="6">June</option>
-              <option value="7">July</option>
-              <option value="8">August</option>
-              <option value="9">September</option>
-              <option value="10">October</option>
-              <option value="11">November</option>
-              <option value="12">December</option>
-            </Select>
-            <Select
-              placeholder="Select Year"
-              value={yearValue}
-              onChange={(e) => handleYearValue(e.target.value)}
-            >
-              {getYears()}
-            </Select>
-          </HStack>
-        </Box>
-      </VStack>
-      <VStack spacing={10} align="start" mt={10}>
-        <Box width="2xl">
-          <Bar data={monthBarChartData} options={monthOptions} />
-        </Box>
-      </VStack>
+          </>
+        ) : (
+          <Stack align="center" mt={10}>
+            <Heading fontWeight="semibold" fontSize="md">
+              Add Employees to your organisation to view attendance analytics!
+            </Heading>
+            <Image src={NoEmployeeSvg} alt="No Employees" w={500} h={500} />
+          </Stack>
+        )
+      }
     </Container>
   );
 }

@@ -46,6 +46,7 @@ export default function AddNewMember({ orgId }) {
     })
       .then((res) => {
         console.log(res.data.message);
+        window.location.reload();
         toast({
           title: 'Success',
           description: 'Successfully added employee',

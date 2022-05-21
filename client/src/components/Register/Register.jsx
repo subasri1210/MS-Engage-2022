@@ -197,7 +197,7 @@ export default function Register() {
                   justify="center"
                 >
                   <Link href="/login" color="purple.500">
-                    Already have an account? Sign in
+                    Already have an account? Log in
                   </Link>
                 </Stack>
               </Stack>

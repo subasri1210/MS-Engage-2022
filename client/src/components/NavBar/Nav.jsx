@@ -10,13 +10,20 @@ import {
   VStack,
   IconButton,
   CloseButton,
-  useColorMode
+  useColorMode,
+  Menu,
+  MenuButton,
+  Avatar,
+  Text,
+  MenuList,
+  MenuItem
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import { BsEmojiSmile } from 'react-icons/bs';
-import { AiOutlineMenu, AiOutlineUser } from 'react-icons/ai';
-import { FiSun, FiMoon, FiLogOut } from 'react-icons/fi';
-import { CgOrganisation } from 'react-icons/cg';
+import { AiOutlineMenu } from 'react-icons/ai';
+import {
+  FiSun, FiMoon, FiChevronDown
+} from 'react-icons/fi';
 import { logout } from '../../config/auth';
 
 export default function Navbar() {
@@ -59,19 +66,41 @@ export default function Navbar() {
             display={{ base: 'none', md: 'inline-flex' }}
           >
             <IconButton
-              icon={<CgOrganisation />}
-            />
-            <IconButton
-              icon={<AiOutlineUser />}
-            />
-            <IconButton
-              icon={<FiLogOut />}
-              onClick={handleLogout}
-            />
-            <IconButton
               onClick={toggleColorMode}
               icon={colorMode === 'dark' ? <FiSun /> : <FiMoon />}
             />
+            <Flex alignItems="center">
+              <Menu>
+                <MenuButton
+                  py={2}
+                  transition="all 0.3s"
+                  _focus={{ boxShadow: 'none' }}
+                >
+                  <HStack>
+                    <Avatar
+                      size="sm"
+                    />
+                    <VStack
+                      display={{ base: 'none', md: 'flex' }}
+                      alignItems="flex-start"
+                      spacing="1px"
+                      ml="2"
+                    >
+                      <Text fontSize="sm">{localStorage.getItem('name')}</Text>
+                    </VStack>
+                    <Box display={{ base: 'none', md: 'flex' }}>
+                      <FiChevronDown />
+                    </Box>
+                  </HStack>
+                </MenuButton>
+                <MenuList
+                  bg={useColorModeValue('white', 'gray.900')}
+                  borderColor={useColorModeValue('gray.200', 'gray.700')}
+                >
+                  <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                </MenuList>
+              </Menu>
+            </Flex>
           </HStack>
           <Box display={{ base: 'inline-flex', md: 'none' }}>
             <IconButton
@@ -102,9 +131,6 @@ export default function Navbar() {
                 aria-label="Close menu"
                 onClick={mobileNav.onClose}
               />
-              <Button w="full" variant="ghost">
-                Organisation
-              </Button>
               <Button w="full" variant="ghost" onClick={toggleColorMode}>
                 Switch to
                 {' '}
@@ -112,10 +138,7 @@ export default function Navbar() {
                 {' '}
                 mode
               </Button>
-              <Button w="full" variant="ghost">
-                Profile
-              </Button>
-              <Button w="full" variant="ghost">
+              <Button w="full" variant="ghost" onClick={handleLogout}>
                 Logout
               </Button>
             </VStack>

@@ -37,23 +37,37 @@ export default function Home() {
           your organisation in a smart and professional way!
         </Text>
         <Stack spacing={6} pb={10} direction="row">
-          <Button
-            rounded="full"
-            px={10}
-            py={6}
-            onClick={() => { navigate('/organizations'); }}
-          >
-            Get started
-          </Button>
-          <Button
-            rounded="full"
-            px={10}
-            py={6}
-            onClick={() => { navigate('/login'); }}
-            width={40}
-          >
-            Login
-          </Button>
+          {
+            localStorage.getItem('token') === null ? (
+              <>
+                <Button
+                  rounded="full"
+                  px={10}
+                  py={6}
+                  onClick={() => { navigate('/login'); }}
+                >
+                  Login
+                </Button>
+                <Button
+                  rounded="full"
+                  px={10}
+                  py={6}
+                  onClick={() => { navigate('/register'); }}
+                >
+                  Sign Up
+                </Button>
+              </>
+            ) : (
+              <Button
+                rounded="full"
+                px={10}
+                py={6}
+                onClick={() => { navigate('/organizations'); }}
+              >
+                Get Started
+              </Button>
+            )
+          }
         </Stack>
         <Image src={HeroPageImage} alt="Face recognition" w={500} h={500} />
       </Stack>
