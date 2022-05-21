@@ -37,7 +37,7 @@ import {
 } from 'react-icons/fi';
 import { BsEmojiSmile } from 'react-icons/bs';
 import { CgOrganisation } from 'react-icons/cg';
-import { MdOutlinePersonAdd, MdOutlinePeopleAlt } from 'react-icons/md';
+import { MdOutlinePersonAdd, MdOutlinePeopleAlt, MdOutlineTrendingUp } from 'react-icons/md';
 import { logout } from '../../config/auth';
 import AddNewMember from './AddNewMember';
 
@@ -127,6 +127,9 @@ function SidebarContent({
       }
       <NavItem icon={MdOutlinePeopleAlt} onClick={() => navigate(`${url}/members`)}>
         All Employees
+      </NavItem>
+      <NavItem icon={MdOutlineTrendingUp} onClick={() => navigate(`${url}/analytics`)}>
+        Analytics
       </NavItem>
     </Box>
   );

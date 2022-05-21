@@ -11,6 +11,7 @@ import Dashboard from '../pages/DashBoard';
 import OrgansationDashboardPage from '../pages/OrganisationDashboard';
 import OrgansationMembersPage from '../pages/OrganisationMembers';
 import SidebarWithHeader from '../components/SideBar/SideBar';
+import OrganisationAnalytics from '../pages/OrganisationAnalytics';
 
 export default function Routers() {
   return (
@@ -22,6 +23,7 @@ export default function Routers() {
         <Route exact path="/facelogin" element={<FaceLogin />} />
         <Route path="/organizations" element={<Dashboard />} />
         <Route path="/organizations/:orgId/members" element={<OrgansationMembersPage />} />
+        <Route path="/organizations/:orgId/analytics" element={<OrganisationAnalytics />} />
         <Route path="/organizations/:orgId" element={<OrgansationDashboardPage />} />
         <Route path="/side" element={<SidebarWithHeader />} />
         <Route

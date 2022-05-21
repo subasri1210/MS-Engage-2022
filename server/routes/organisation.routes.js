@@ -22,8 +22,6 @@ organisationRouter.post('/isAdmin', utils.checkAuth, orgController.isAdmin);
 
 organisationRouter.post('/getAllMembers', utils.checkAuth, orgController.getAllMembers);
 
-organisationRouter.post('/makeAdmin', utils.checkAuth, orgController.makeAdmin);
-
-organisationRouter.post('/removeMember', utils.checkAuth, orgController.removeMember);
+organisationRouter.post('/getAnalytics', utils.checkAuth, orgController.getAnalytics);
 
 module.exports = organisationRouter;

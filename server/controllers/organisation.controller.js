@@ -5,7 +5,7 @@ const userModel = require('../models/user.model');
 // check if current user is admin or not
 const isAdmin = async (req, res) => {
     const { orgId } = req.body;
-    const organisation = await orgModel.findById({ orgId });
+    const organisation = await orgModel.findById(orgId);
     const currentUser = req.user;
     const isAdmin = organisation.admins.includes(currentUser._id);
 
@@ -49,8 +49,6 @@ const createOrg = async (req, res) => {
         const user = req.user;
         user.organisations.push(org._id);
         await user.save();
-
-        console.log(org);
 
         return res.status(200).json({
             message: 'Organisation created successfully'
@@ -184,65 +182,120 @@ const getAllMembers = async (req, res) => {
     });
 };
 
-// make member to admin
-const makeAdmin = async (req, res) => {
-    const { orgId, userId } = req.body;
-    const organisation = await orgModel.findById({ orgId });
+const getAnalytics = async (req, res) => {
+    const { orgId, date, month, year } = req.body;
+    const organisation = await orgModel.findById(orgId);
     const currentUser = req.user;
     const isAdmin = organisation.admins.includes(currentUser._id);
+    let inData = 0, outData = 0, notMarkedIn = 0, monthInData=0, monthOutData=0, monthNotMarkedIn=0;
 
-    if (!isAdmin) {
-        return res.status(403).json({
-            message: 'You are not an authorised to perform this ation'
+    // Admin Analytics data
+    if (isAdmin) {
+
+        // date analytics
+        const dateStart = new Date(new Date(date).setHours(0, 0, 0));
+        const dateEnd = new Date(new Date(date).setHours(23, 59, 59));
+        
+        inData = await attendanceModel.find({
+            organisation: orgId,
+            date: {
+                $gte: dateStart,
+                $lte: dateEnd
+            },
+            status: 'In'
+        }).count();
+
+        outData = await attendanceModel.find({
+            organisation: orgId,
+            date: {
+                $gte: dateStart,
+                $lte: dateEnd
+            },
+            status: 'Out'
+        }).count();
+
+        notMarkedIn = organisation.members.length - (inData + outData);
+
+        //month analytics
+        const monthStart = new Date(new Date(`${year}-${month}-1`).setHours(0, 0, 0));
+        const monthEnd = new Date(new Date(`${year}-${month}-28`).setHours(23, 59, 59));
+
+        monthInData = await attendanceModel.find({
+            organisation: orgId,
+            date: {
+                $gte: monthStart,
+                $lte: monthEnd
+            },
+            status: 'In'
+        }).count();
+    
+        monthOutData = await attendanceModel.find({
+            organisation: orgId,
+            date: {
+                $gte: monthStart,
+                $lte: monthEnd
+            },
+            status: 'Out'
+        }).count();
+    
+        monthNotMarkedIn = (organisation.members.length*28) - (monthInData + monthOutData);
+
+        return res.json({
+            isAdmin,
+            totalEmployees: organisation.members.length,
+            dateAnalytics: {
+                inData,
+                outData,
+                notMarkedIn
+            },
+            monthAnalytics: {
+                monthInData,
+                monthOutData,
+                monthNotMarkedIn
+            }
         });
     }
 
-    if (organisation.admins.indexOf(userId) !== -1) {
-        return res.status(409).json({
-            message: 'User is already an admin of this organisation'
-        });
+    //member analytics data
+    const dateStart = new Date(new Date(`${year}-${month}-1`).setHours(0, 0, 0));
+    const dateEnd = new Date(new Date(`${year}-${month}-28`).setHours(23, 59, 59));
+    
+    inData = await attendanceModel.find({
+        organisation: orgId,
+        date: {
+            $gte: dateStart,
+            $lte: dateEnd
+        },
+        status: 'In',
+        user: req.user._id
+    }).count();
+
+    outData = await attendanceModel.find({
+        organisation: orgId,
+        date: {
+            $gte: dateStart,
+            $lte: dateEnd
+        },
+        status: 'Out',
+        user: req.user._id
+    }).count();
+
+    if (year == new Date().getFullYear() && month == new Date().getMonth() + 1) {
+        notMarkedIn = (new Date().getDate()) - (inData + outData);
+    }
+    else {
+        notMarkedIn = 30 - (inData + outData);
     }
 
-    await organisation.admins.push(userId);
-    await organisation.save();
-
-    return res.status(200).json({
-        message: 'User made admin successfully'
+    return res.json({
+        isAdmin,
+        monthAnalytics: {
+            inData,
+            outData,
+            notMarkedIn
+        }
     });
-};
 
-// remove member from organisation
-const removeMember = async (req, res) => {
-    const { orgId, userId } = req.body;
-    const organisation = await orgModel.findById({ orgId });
-    const currentUser = req.user;
-    const isAdmin = organisation.admins.includes(currentUser._id);
-
-    if (!isAdmin) {
-        return res.status(403).json({
-            message: 'You are not an authorised to perform this ation'
-        });
-    }
-
-    if (organisation.members.indexOf(userId) === -1) {
-        return res.status(404).json({
-            message: 'User is not a member of this organisation'
-        });
-    }
-
-    await organisation.members.pull(userId);
-    await organisation.save();
-
-    const user = await req.userModel.findById(userId);
-    await user.organisations.pull(orgId);
-    await user.save();
-
-    await attendanceModel.deleteMany({ user: userId, organisation: orgId });
-    await attendanceModel.save();
-
-    return res.status(200).json({
-        message: 'User removed successfully'
-    });
 };
 
 module.exports = {
@@ -251,6 +304,5 @@ module.exports = {
     getUserOrgs,
     isAdmin,
     getAllMembers,
-    makeAdmin,
-    removeMember
+    getAnalytics
 };
