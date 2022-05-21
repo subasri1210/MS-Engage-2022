@@ -22,7 +22,7 @@ const isAdmin = async (req, res) => {
 // create new organisation
 const createOrg = async (req, res) => {
     try {
-        const { name, description, inTime, outTime } = req.body;
+        const { name, description, inTime, outTime, location } = req.body;
 
         if (!(name && description && inTime && outTime)) {
             return res.status(400).json({
@@ -42,7 +42,7 @@ const createOrg = async (req, res) => {
             return res.status(400).json({ error: 'Please provide a valid time range' });
         }
 
-        const org = await new orgModel({ name, description, inTime, outTime });
+        const org = await new orgModel({ name, description, inTime, outTime, location });
         await org.admins.push(req.user._id);
         await org.save();
 
@@ -95,7 +95,7 @@ const addMember = async (req, res) => {
     try {
         const { orgId, email } = req.body;
 
-        if (!(orgId && email)) {
+        if (!(email)) {
             return res.status(400).json({
                 error: 'Please provide all required fields'
             });
@@ -122,7 +122,7 @@ const addMember = async (req, res) => {
             });
         }
 
-        if (org.members.indexOf(user._id) !== -1) {
+        if (org.members.indexOf(user._id) !== -1 || org.admins.indexOf(user._id) !== -1) {
             return res.status(409).json({
                 error: 'User with this email is already a member of this organisation'
             });

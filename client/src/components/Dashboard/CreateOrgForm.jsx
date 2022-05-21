@@ -14,12 +14,13 @@ import {
   useColorMode,
   HStack,
   Text,
-  useToast
+  useToast,
+  useBoolean
 } from '@chakra-ui/react';
 import { HiOutlineOfficeBuilding } from 'react-icons/hi';
 import axios from 'axios';
 
-import { BACKEND_URL } from '../../config/config';
+import { BACKEND_URL, ipapiKey } from '../../config/config';
 import './styles.css';
 
 export default function CreateOrgForm() {
@@ -35,8 +36,10 @@ export default function CreateOrgForm() {
     end: ''
   });
   const toast = useToast();
+  const [isLoading, setIsLoading] = useBoolean();
 
   const handleCreateOrg = async () => {
+    setIsLoading.toggle();
     if (orgName.length === 0) {
       toast({
         description: 'Organisation name cannot be empty',
@@ -67,24 +70,42 @@ export default function CreateOrgForm() {
       });
     }
 
-    const token = localStorage.getItem('token');
+    let latitude = '0'; let
+      longitude = '0';
+
+    await axios({
+      method: 'get',
+      url: `http://api.ipapi.com/api/check?access_key=${ipapiKey}`
+    })
+      .then((response) => {
+        latitude = response.data.latitude;
+        longitude = response.data.longitude;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
 
     await axios({
       method: 'post',
       url: `${BACKEND_URL}/org/create`,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${localStorage.getItem('token')}`
       },
       data: JSON.stringify({
         name: orgName,
         description: orgDesc,
         inTime: intime,
-        outTime: outime
+        outTime: outime,
+        location: {
+          latitude,
+          longitude
+        }
       })
     })
       .then((res) => {
         console.log(res.data);
+        setIsLoading.toggle();
         toast({
           description: 'Organisation created successfully!',
           status: 'success',
@@ -96,6 +117,7 @@ export default function CreateOrgForm() {
       })
       .catch((err) => {
         console.log(err);
+        setIsLoading.toggle();
         toast({
           title: 'Error',
           description: err.response.data.error,
@@ -182,10 +204,17 @@ export default function CreateOrgForm() {
         Your Employees will be able to mark their attendance
         only within the intime and outime range you provide.
       </Text>
+      <Text fontSize="xs" textAlign="center">
+        Note: Your current location is being recorded and your employees
+        will be able to mark their attendance only if they are within
+        this location.
+      </Text>
       <Button
         type="submit"
         colorScheme="brand"
         w="full"
+        isLoading={isLoading}
+        loadingText="Creating..."
         onClick={handleCreateOrg}
       >
         Create

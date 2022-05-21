@@ -41,11 +41,11 @@ const organisationSchema = new mongoose.Schema(
         },
         location: {
             latitude: {
-                type: Number,
+                type: String,
                 trim: true
             },
             longitude: {
-                type: Number,
+                type: String,
                 trim: true
             }
         }

@@ -21,7 +21,7 @@ import {
 import * as faceapi from 'face-api.js';
 import Webcam from 'react-webcam';
 import './styles.css';
-import { BACKEND_URL } from '../../config/config';
+import { BACKEND_URL, ipapiKey } from '../../config/config';
 
 export default function Attendance({ orgId }) {
   const height = 560;
@@ -39,9 +39,27 @@ export default function Attendance({ orgId }) {
 
   const handleMarkAtt = async () => {
     handleLoading();
+
+    let latitude = '0'; let
+      longitude = '0';
+
+    await axios({
+      method: 'get',
+      url: `http://api.ipapi.com/api/check?access_key=${ipapiKey}`
+    })
+      .then((response) => {
+        latitude = response.data.latitude;
+        longitude = response.data.longitude;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
     const form = new FormData();
     form.append('image', image);
     form.append('orgId', orgId);
+    form.append('latitude', latitude);
+    form.append('longitude', longitude);
     await axios({
       method: 'post',
       url: `${BACKEND_URL}/org/regsiterAttendance`,

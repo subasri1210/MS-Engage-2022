@@ -28,17 +28,34 @@ function EmployeeDashBoard({ orgData }) {
   const [attStatus, setAttStatus] = useState('none');
   const [showAttPage, setShowAttPage] = useState(false);
 
+  console.log('timeStatus', timeStatus);
+  console.log('attStatus', attStatus);
+
   useEffect(() => {
     if (orgData) {
       const timeNow = new Date();
       const hours = timeNow.getHours();
       const minutes = timeNow.getMinutes();
       const timeString = `${hours}:${minutes}`;
-      if (orgData.organisationInTime.start <= timeString
-        && orgData.organisationInTime.end >= timeString) {
+
+      const [inStartHour, inStartMinute] = orgData.organisationInTime.start.split(':');
+      const [inEndHour, inEndMinute] = orgData.organisationInTime.end.split(':');
+
+      const inTimeStart = new Date(2022, 0, 1, +inStartHour, +inStartMinute);
+      const inTimeEnd = new Date(2022, 0, 1, +inEndHour, +inEndMinute);
+
+      const [outStartHour, outStartMinute] = orgData.organisationOutTime.start.split(':');
+      const [outEndHour, outEndMinute] = orgData.organisationOutTime.end.split(':');
+
+      const outTimeStart = new Date(2022, 0, 1, +outStartHour, +outStartMinute);
+      const outTimeEnd = new Date(2022, 0, 1, +outEndHour, +outEndMinute);
+
+      const [timeNowHour, timeNowMinute] = timeString.split(':');
+      const timeNowDate = new Date(2022, 0, 1, +timeNowHour, +timeNowMinute);
+
+      if (inTimeStart <= timeNowDate && inTimeEnd >= timeNowDate) {
         setTimeStatus('intime');
-      } else if (orgData.organisationOutTime.start <= timeString
-        && orgData.organisationOutTime.end >= timeString) {
+      } else if (outTimeStart <= timeNowDate && outTimeEnd >= timeNowDate) {
         setTimeStatus('outtime');
       } else {
         setTimeStatus('none');

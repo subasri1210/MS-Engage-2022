@@ -73,7 +73,7 @@ export default function OrganisationAnalytics() {
   }, [dateValue, monthValue, yearValue]);
 
   return (
-    <SidebarWithHeader isAdmin={isAdmin} url={url}>
+    <SidebarWithHeader isAdmin={isAdmin} url={url} orgId={orgId}>
       {
         isLoading ? (
           <Center>

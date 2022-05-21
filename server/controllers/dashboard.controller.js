@@ -115,7 +115,7 @@ const getDashboardData = async (req, res) => {
 
 // register attendance by employee
 const registerAttendance = async (req, res) => {
-    const { orgId } = req.body;
+    const { orgId, latitude, longitude } = req.body;
     const organisation = await orgModel.findById(orgId);
     const currentUser = req.user;
 
@@ -126,6 +126,16 @@ const registerAttendance = async (req, res) => {
     }
     if (req.file.filename == null || req.file.filename == undefined) {
         res.status(400).json({ error: 'User Image not found' });
+    }
+
+    if (!(parseInt(organisation.location.latitude) <= parseInt(latitude) + 10
+        && parseInt(organisation.location.latitude) >= parseInt(latitude) - 10)) {
+        return res.status(400).json({ error: 'You are not located in the organisation location' });
+    }
+
+    if (!(parseInt(organisation.location.longitude) <= parseInt(longitude) + 10
+        && parseInt(organisation.location.longitude) >= parseInt(longitude) - 10)) {
+        return res.status(400).json({ error: 'You are not located in the organisation location' });
     }
 
     // detect face
