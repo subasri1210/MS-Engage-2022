@@ -95,6 +95,7 @@ export default function Register() {
           isClosable: true
         });
         navigate('/login');
+        window.location.reload();
       })
       .catch((err) => {
         handleLoading();

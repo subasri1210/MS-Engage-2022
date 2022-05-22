@@ -3,9 +3,10 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import {
-  useParams
+  useParams,
+  useNavigate
 } from 'react-router-dom';
-import { toast, Spinner, Center } from '@chakra-ui/react';
+import { useToast, Spinner, Center } from '@chakra-ui/react';
 import SidebarWithHeader from '../components/SideBar/SideBar';
 import { BACKEND_URL } from '../config/config';
 import { AdminMemberView } from '../components/OrganisationMembers/AdminMemberView';
@@ -18,6 +19,8 @@ export default function OrgansationMembersPage() {
   const [adminsData, setAdminsData] = useState(null);
   const [membersData, setMembersData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
+  const toast = useToast();
 
   useEffect(() => {
     const getMemberData = async () => {
@@ -41,13 +44,23 @@ export default function OrgansationMembersPage() {
         })
         .catch((err) => {
           console.log(err.response.data.error);
-          toast({
-            title: 'Error',
-            description: err.response.data.error,
-            status: 'error',
-            duration: 5000,
-            isClosable: true
-          });
+          if (err.response.status === 401) {
+            navigate('/login');
+          }
+          if (err.response.status === 402) {
+            navigate('/organizations');
+          }
+          const id = 1;
+          if (!toast.isActive(id)) {
+            toast({
+              id: 1,
+              title: 'Error',
+              description: err.response.data.error,
+              status: 'error',
+              duration: 5000,
+              isClosable: true
+            });
+          }
         });
     };
 

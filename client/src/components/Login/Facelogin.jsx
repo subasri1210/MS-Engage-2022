@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import React, {
   useState, useEffect, useRef, useCallback
 } from 'react';
@@ -51,9 +52,14 @@ export default function FaceLogin() {
       data: form
     })
       .then((res) => {
+        localStorage.setItem('token', res.data.token);
+        localStorage.setItem('_id', res.data.user._id);
+        localStorage.setItem('email', res.data.user.email);
+        localStorage.setItem('name', res.data.user.name);
         handleLoading();
         console.log(res.data);
         navigate('/');
+        window.location.reload();
       })
       .catch((err) => {
         handleLoading();
@@ -204,6 +210,7 @@ export default function FaceLogin() {
             isLoading={isLoading}
             loadingText="Logging in"
             onClick={handleLogin}
+            disabled={!imageCaptured || isLoading}
           >
             Login
           </Button>

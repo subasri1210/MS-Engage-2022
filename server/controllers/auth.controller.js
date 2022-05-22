@@ -32,8 +32,8 @@ const login = async (req, res) => {
 
 const faceLogin = async (req, res) => {
     try {
-        if (req.file.filename == null || req.file.filename == undefined) {
-            res.status(400).json({ error: 'User Image not found' });
+        if (req.file == null || req.file == undefined) {
+            res.status(400).json({ error: 'Please capture image to login' });
         }
         let [detectFaceResponse, detectFaceErr] = await faceController.detectFace(req.file.filename);
         if (detectFaceErr) {
@@ -68,12 +68,10 @@ const faceLogin = async (req, res) => {
         const token = await jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET);
         user.tokens = user.tokens.concat({ token });
         await user.save();
-    
-        console.log(user);
+
         res.status(200).json({ token, user: { _id: user._id, name: user.name, email: user.email } });
     } catch (err) {
         console.log(err);
-        res.status(400).json({ error: 'Unable to login' });
     }
 };
 
@@ -89,7 +87,7 @@ const register = async (req, res) => {
             return res.status(400).json({ error: 'User with this email already exists!' });
         }
         if (req.file == null || req.file == undefined) {
-            res.status(400).json({ error: 'Error while uploading the file' });
+            res.status(400).json({ error: 'Please capture image to register' });
         }
 
         if ((await personGroupModel.estimatedDocumentCount()) == 0) {

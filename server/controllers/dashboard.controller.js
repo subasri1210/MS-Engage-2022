@@ -1,5 +1,6 @@
 const startOfDay = require('date-fns/startOfDay');
 const endOfDay = require('date-fns/endOfDay');
+const mongoose = require('mongoose');
 
 const orgModel = require('../models/organisation.model');
 const attendanceModel = require('../models/attendance.model');
@@ -8,12 +9,25 @@ const userModel = require('../models/user.model');
 
 const getDashboardData = async (req, res) => {
     const { orgId } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(orgId)) {
+        return res.status(402).json({
+            error: 'Organisation not found'
+        });
+    }
+
     const organisation = await orgModel.findById(orgId);
     const currentUser = req.user;
     const isAdmin = organisation.admins.includes(currentUser._id);
 
+    if (!organisation) {
+        return res.status(402).json({
+            error: 'Organisation not found'
+        });
+    }
+
     if (!isAdmin && !organisation.members.includes(currentUser._id)) {
-        return res.status(401).json({
+        return res.status(400).json({
             error: 'You are not authorized to view this page'
         });
     }
@@ -120,11 +134,11 @@ const registerAttendance = async (req, res) => {
     const currentUser = req.user;
 
     if (!organisation.members.includes(currentUser._id)) {
-        return res.status(401).json({
+        return res.status(400).json({
             message: 'You are not authorized to view this page'
         });
     }
-    if (req.file.filename == null || req.file.filename == undefined) {
+    if (req.file == null || req.file == undefined) {
         res.status(400).json({ error: 'User Image not found' });
     }
 

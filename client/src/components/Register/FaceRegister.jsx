@@ -175,6 +175,7 @@ export default function FaceRegister({ handleImageChange, handleRegister, isLoad
             mb={20}
             isLoading={isLoading}
             loadingText="Registering"
+            disabled={!imageCaptured || isLoading}
           >
             Register
           </Button>

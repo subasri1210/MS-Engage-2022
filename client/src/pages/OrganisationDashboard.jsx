@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import {
-  useParams
+  useParams, useNavigate
 } from 'react-router-dom';
 import { toast, Center, Spinner } from '@chakra-ui/react';
 import AdminDashBoard from '../components/Organization/AdminDashboard';
@@ -18,6 +18,7 @@ export default function OrgansationDashboardPage() {
   const [orgData, setOrgData] = useState(null);
   const [isAdmin, setIsAdmin] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const getDashboardData = async () => {
@@ -40,13 +41,23 @@ export default function OrgansationDashboardPage() {
         })
         .catch((err) => {
           console.log(err.response.data.error);
-          toast({
-            title: 'Error',
-            description: err.response.data.error,
-            status: 'error',
-            duration: 5000,
-            isClosable: true
-          });
+          if (err.response.status === 401) {
+            navigate('/login');
+          }
+          if (err.response.status === 402) {
+            navigate('/organizations');
+          }
+          const id = 1;
+          if (!toast.isActive(id)) {
+            toast({
+              id: 1,
+              title: 'Error',
+              description: err.response.data.error,
+              status: 'error',
+              duration: 5000,
+              isClosable: true
+            });
+          }
         });
     };
 

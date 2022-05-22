@@ -1,6 +1,7 @@
 const attendanceModel = require('../models/attendance.model');
 const orgModel = require('../models/organisation.model');
 const userModel = require('../models/user.model');
+const mongoose = require('mongoose');
 
 // check if current user is admin or not
 const isAdmin = async (req, res) => {
@@ -148,7 +149,22 @@ const addMember = async (req, res) => {
 // get data of all members of an organisation
 const getAllMembers = async (req, res) => {
     const { orgId } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(orgId)) {
+        return res.status(402).json({
+            error: 'Organisation not found'
+        });
+    }
+
     const org = await orgModel.findById(orgId);
+
+
+    if (!org) {
+        return res.status(402).json({
+            error: 'Organisation not found'
+        });
+    }
+
     const organisation = await orgModel.findById(orgId).populate({
         path: 'members',
         select: ['name', 'email']
@@ -184,10 +200,24 @@ const getAllMembers = async (req, res) => {
 
 const getAnalytics = async (req, res) => {
     const { orgId, date, month, year } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(orgId)) {
+        return res.status(402).json({
+            error: 'Organisation not found'
+        });
+    }
+
     const organisation = await orgModel.findById(orgId);
     const currentUser = req.user;
+
+    if (!organisation) {
+        return res.status(402).json({
+            error: 'Organisation not found'
+        });
+    }
+
     const isAdmin = organisation.admins.includes(currentUser._id);
-    let inData = 0, outData = 0, notMarkedIn = 0, monthInData=0, monthOutData=0, monthNotMarkedIn=0;
+    let inData = 0, outData = 0, notMarkedIn = 0, monthInData = 0, monthOutData = 0, monthNotMarkedIn = 0;
 
     // Admin Analytics data
     if (isAdmin) {

@@ -21,13 +21,16 @@ export default function DashBoard() {
     const checkUserAndGetUserOrgs = async () => {
       const response = await authCheck();
       if (!response.isAuthenticated) {
-        toast({
-          description: 'Please log in to continue!',
-          status: 'error',
-          duration: 5000,
-          isClosable: true
-        });
         navigate('/login');
+        const id = 1;
+        if (!toast.isActive(id)) {
+          toast({
+            description: 'Please log in to continue!',
+            status: 'error',
+            duration: 5000,
+            isClosable: true
+          });
+        }
         return;
       }
       setUserData(response.data);

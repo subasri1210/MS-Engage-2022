@@ -48,7 +48,9 @@ export default function CreateOrgForm() {
         position: 'top',
         isClosable: true
       });
-    } else if (orgDesc.length === 0) {
+      setIsLoading.toggle();
+      return;
+    } if (orgDesc.length === 0) {
       toast({
         description: 'Organisation description cannot be empty',
         status: 'error',
@@ -56,7 +58,9 @@ export default function CreateOrgForm() {
         position: 'top',
         isClosable: true
       });
-    } else if (intime.start === '' || intime.end === ''
+      setIsLoading.toggle();
+      return;
+    } if (intime.start === '' || intime.end === ''
       || outime.start === '' || outime.end === ''
       || intime.start > intime.end || outime.start > outime.end
       || intime.start > outime.start || intime.end > outime.end
@@ -68,6 +72,8 @@ export default function CreateOrgForm() {
         position: 'top',
         isClosable: true
       });
+      setIsLoading.toggle();
+      return;
     }
 
     let latitude = '0'; let

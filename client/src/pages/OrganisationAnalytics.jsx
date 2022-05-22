@@ -3,9 +3,10 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import {
-  useParams
+  useParams,
+  useNavigate
 } from 'react-router-dom';
-import { toast, Center, Spinner } from '@chakra-ui/react';
+import { useToast, Center, Spinner } from '@chakra-ui/react';
 import SidebarWithHeader from '../components/SideBar/SideBar';
 import { BACKEND_URL } from '../config/config';
 import AdminAnalytics from '../components/OrganisationAnalytic/AdminAnalytics';
@@ -19,6 +20,8 @@ export default function OrganisationAnalytics() {
   const [dateValue, setDateValue] = useState(`${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()}`);
   const [monthValue, setMonthValue] = useState(new Date().getMonth() + 1);
   const [yearValue, setYearValue] = useState(new Date().getFullYear());
+  const navigate = useNavigate();
+  const toast = useToast();
   const url = `/organizations/${orgId}`;
 
   const handleChangeDateValue = (date) => {
@@ -59,13 +62,23 @@ export default function OrganisationAnalytics() {
         })
         .catch((err) => {
           console.log(err.response.data.error);
-          toast({
-            title: 'Error',
-            description: err.response.data.error,
-            status: 'error',
-            duration: 5000,
-            isClosable: true
-          });
+          if (err.response.status === 401) {
+            navigate('/login');
+          }
+          if (err.response.status === 402) {
+            navigate('/organizations');
+          }
+          const id = 1;
+          if (!toast.isActive(id)) {
+            toast({
+              id: 1,
+              title: 'Error',
+              description: err.response.data.error,
+              status: 'error',
+              duration: 5000,
+              isClosable: true
+            });
+          }
         });
     };
 

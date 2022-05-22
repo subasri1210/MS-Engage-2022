@@ -223,6 +223,7 @@ export default function Attendance({ orgId }) {
             isLoading={isLoading}
             loadingText="Please wait"
             onClick={handleMarkAtt}
+            disabled={!imageCaptured || isLoading}
           >
             Mark Attendance
           </Button>
