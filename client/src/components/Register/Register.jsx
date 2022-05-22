@@ -86,8 +86,8 @@ export default function Register() {
       .then((res) => {
         handleLoading();
         console.log(res.data);
-        window.location.reload();
         navigate('/login');
+        window.location.reload();
         toast({
           title: 'Success',
           description: 'Successfully registered. Please login to continue.',
