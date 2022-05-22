@@ -58,8 +58,8 @@ export default function FaceLogin() {
         localStorage.setItem('name', res.data.user.name);
         handleLoading();
         console.log(res.data);
-        navigate('/');
         window.location.reload();
+        navigate('/');
       })
       .catch((err) => {
         handleLoading();

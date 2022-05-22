@@ -112,6 +112,7 @@ export default function CreateOrgForm() {
       .then((res) => {
         console.log(res.data);
         setIsLoading.toggle();
+        window.location.reload();
         toast({
           description: 'Organisation created successfully!',
           status: 'success',
@@ -119,7 +120,6 @@ export default function CreateOrgForm() {
           position: 'top',
           isClosable: true
         });
-        window.location.reload();
       })
       .catch((err) => {
         console.log(err);

@@ -86,6 +86,8 @@ export default function Register() {
       .then((res) => {
         handleLoading();
         console.log(res.data);
+        window.location.reload();
+        navigate('/login');
         toast({
           title: 'Success',
           description: 'Successfully registered. Please login to continue.',
@@ -94,8 +96,6 @@ export default function Register() {
           position: 'top',
           isClosable: true
         });
-        navigate('/login');
-        window.location.reload();
       })
       .catch((err) => {
         handleLoading();
