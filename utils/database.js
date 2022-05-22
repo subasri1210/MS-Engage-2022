@@ -8,7 +8,7 @@ class Database {
     _connect() {
         mongoose.set('debug', true);
         mongoose
-            .connect('mongodb://127.0.0.1:27017/ms-enage-facefirst', this.opts)
+            .connect(process.env.MONGO_URI, this.opts)
             .then(() => {
                 console.log('Database connection successful');
             })

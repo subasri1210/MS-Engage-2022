@@ -6,12 +6,13 @@ const morgan = require('morgan');
 const cors = require('cors');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
+const path = require('path');
 
 const rootRouter = require('./routes/root.routes');
 const organisationRouter = require('./routes/organisation.routes');
 
 const app = express();
-const port = 3001;
+const port = process.env.PORT || 3001;
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(morgan('dev'));
@@ -54,8 +55,18 @@ app.use(
     })
 );
 
-app.use('/', rootRouter);
-app.use('/org', organisationRouter);
+app.use('/api/org', organisationRouter);
+app.use('/api', rootRouter);
+
+// Serve static assets in production
+if (process.env.NODE_ENV === 'production') {
+    // Set static folder
+    app.use(express.static('client/build'));
+  
+    app.get('*', (req, res) => {
+        res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+    });
+}
 
 app.listen(port, () => {
     console.log(`App running on port ${port}`);

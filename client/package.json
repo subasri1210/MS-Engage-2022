@@ -72,5 +72,6 @@
     "prettier": "^2.6.2",
     "stylelint": "^14.8.2",
     "stylelint-config-standard": "^25.0.0"
-  }
+  },
+  "proxy": "http://localhost:3001"
 }

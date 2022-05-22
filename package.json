@@ -1,28 +1,40 @@
 {
-  "name": "ms_engage_2022",
+  "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "setup": "npm run client-install && npm run server-install",
-    "server-install": "cd server && npm install && cd ..",
-    "client-install": "cd client && npm install && cd ..",
-    "server": "cd server && npm run start && cd ..",
-    "client": "cd client && npm run start && cd ..",
-    "dev": "concurrently -n 'server,client' -c 'red,green'  \"npm run server\" \"npm run client\"",
-    "build": "cd client && npm run build",
-    "lint": "eslint ./client ./server",
-    "lint:fix": "eslint --fix ./client ./server",
-    "format": "prettier --write \"**/*.+(js|jsx|css|md)\""
+    "start": "node server",
+    "server": "nodemon server",
+    "client": "npm start --prefix client",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
   },
-  "author": "Subasri S",
+  "author": "",
   "license": "ISC",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.0",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "express-session": "^1.17.3",
+    "fs": "^0.0.1-security",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.3.3",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.4"
+  },
   "devDependencies": {
-    "concurrently": "^7.1.0",
-    "eslint": "^8.15.0",
+    "concurrently": "^7.2.0",
+    "eslint": "^8.16.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.0.0",
+    "nodemon": "^2.0.16",
     "prettier": "^2.6.2"
   }
 }
