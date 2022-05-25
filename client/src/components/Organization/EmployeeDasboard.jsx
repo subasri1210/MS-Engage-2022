@@ -135,7 +135,7 @@ function EmployeeDashBoard({ orgData }) {
         !showAttPage ? (
           <VStack spacing={10}>
             <Heading as="h4" size="md">
-              Organisation name
+              {orgData ? orgData.orgName : 'Organisation Name'}
             </Heading>
             <SimpleGrid columns={{ base: 1, sm: 2, md: 3 }} spacing={5} mt={6} mb={4}>
               {statData && statData.map((data) => (

@@ -22,7 +22,13 @@ jobs:
       - name: Install dependencies
         run: |
           npm i
-          npm run setup
+          cd client
+          npm i
+          cd ..
 
       - name: Build
-        run: npm run build
+        run: |
+          npm i 
+          cd client
+          npm run build
+          cd ..
