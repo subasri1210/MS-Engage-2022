@@ -5,6 +5,8 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "setup": "npm i &&  npm run client-install",
+    "client-install": "cd client && npm i --legacy-peer-deps",
     "start": "node server",
     "server": "nodemon server",
     "client": "npm start --prefix client",
